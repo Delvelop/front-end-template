@@ -1,24 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Radio, MapPin, Users, BatteryWarning, Power, Navigation, StopCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Switch } from '../ui/switch';
 import { Card } from '../ui/card';
 
-interface LiveBroadcastingScreenProps {
-  onNavigate: (screen: string) => void;
+interface IceCreamTruck {
+  id: string;
+  name: string;
+  ownerId: string;
+  flavorCategories: string[];
+  description: string;
+  status: 'live' | 'static' | 'offline';
+  location: {
+    lat: number;
+    lng: number;
+  };
+  distance?: string;
+  rating: number;
+  schedule: string;
+  contact: string;
+  photoUrl: string;
 }
 
-export default function LiveBroadcastingScreen({ onNavigate }: LiveBroadcastingScreenProps) {
-  const [isBroadcasting, setIsBroadcasting] = useState(false);
+interface LiveBroadcastingScreenProps {
+  onNavigate: (screen: string) => void;
+  trucks: IceCreamTruck[];
+  broadcastingTruckId: string | null;
+  onStartBroadcasting: (truckId: string) => void;
+  onStopBroadcasting: () => void;
+}
+
+export default function LiveBroadcastingScreen({
+  onNavigate,
+  trucks,
+  broadcastingTruckId,
+  onStartBroadcasting,
+  onStopBroadcasting
+}: LiveBroadcastingScreenProps) {
+  const [selectedTruckId, setSelectedTruckId] = useState<string | null>(null);
   const [broadcastDuration, setBroadcastDuration] = useState('00:00:00');
 
+  const isBroadcasting = !!broadcastingTruckId;
+  const broadcastingTruck = isBroadcasting ? trucks.find(t => t.id === broadcastingTruckId) : null;
+  const availableTrucks = trucks; // All trucks owned by the driver are available for broadcasting
+
   const handleToggleBroadcast = () => {
-    setIsBroadcasting(!isBroadcasting);
-    if (!isBroadcasting) {
-      // Start timer simulation
+    console.log('Toggle broadcast clicked', { isBroadcasting, selectedTruckId, availableTrucks, broadcastingTruckId });
+    if (isBroadcasting) {
+      console.log('Stopping broadcast');
+      onStopBroadcasting();
+      setBroadcastDuration('00:00:00');
+    } else {
+      // Start broadcasting with the selected truck or first available truck
+      const truckToUse = selectedTruckId || availableTrucks[0]?.id;
+      console.log('Starting broadcast with truck:', truckToUse);
+      if (truckToUse) {
+        onStartBroadcasting(truckToUse);
+        console.log('Called onStartBroadcasting with:', truckToUse);
+      } else {
+        console.log('No truck available to broadcast');
+      }
+    }
+  };
+
+  // Initialize selected truck if not set
+  useEffect(() => {
+    console.log('All trucks:', trucks);
+    console.log('Available trucks:', availableTrucks);
+    console.log('Selected truck ID:', selectedTruckId);
+    if (!selectedTruckId && availableTrucks.length > 0) {
+      setSelectedTruckId(availableTrucks[0].id);
+      console.log('Set selected truck to:', availableTrucks[0].id);
+    }
+  }, [selectedTruckId, availableTrucks, trucks]);
+
+  // Timer effect for broadcasting duration
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isBroadcasting) {
       let seconds = 0;
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         seconds++;
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -27,9 +89,16 @@ export default function LiveBroadcastingScreen({ onNavigate }: LiveBroadcastingS
           `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
         );
       }, 1000);
-      return () => clearInterval(timer);
+    } else {
+      setBroadcastDuration('00:00:00');
     }
-  };
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [isBroadcasting]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -98,13 +167,31 @@ export default function LiveBroadcastingScreen({ onNavigate }: LiveBroadcastingS
                 )}
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {isBroadcasting ? 'You Are Live!' : 'Start Broadcasting'}
+                {isBroadcasting ? `${broadcastingTruck?.name} is Live!` : 'Start Broadcasting'}
               </h2>
               <p className="text-gray-600">
                 {isBroadcasting
                   ? 'Customers can see your location and send requests'
                   : 'Share your location with nearby customers'}
               </p>
+              {!isBroadcasting && availableTrucks.length > 1 && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select truck to broadcast:
+                  </label>
+                  <select
+                    value={selectedTruckId || ''}
+                    onChange={(e) => setSelectedTruckId(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    {availableTrucks.map(truck => (
+                      <option key={truck.id} value={truck.id}>
+                        {truck.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
             <Button

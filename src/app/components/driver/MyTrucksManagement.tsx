@@ -2,20 +2,20 @@ import React from 'react';
 import { ArrowLeft, Truck, Plus, Edit, Trash2, Radio, LayoutDashboard, MessageSquare, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { FoodTruck } from '../../App';
+import { IceCreamTruck } from '../../App';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 interface MyTrucksManagementProps {
-  trucks: FoodTruck[];
+  trucks: IceCreamTruck[];
   onNavigate: (screen: string, data?: any) => void;
-  onEditTruck: (truck: FoodTruck) => void;
+  onEditTruck: (truck: IceCreamTruck) => void;
 }
 
 const truckImages: { [key: string]: string } = {
-  'taco-truck': 'https://images.unsplash.com/photo-1630165683188-4f2e2bbaa52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb29kJTIwdHJ1Y2slMjB0YWNvcyUyMG1leGljYW58ZW58MXx8fHwxNzcwODYwOTE0fDA&ixlib=rb-4.1.0&q=80&w=1080',
-  'burger-truck': 'https://images.unsplash.com/photo-1760008018960-a3a39c44e052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXJnZXIlMjBmb29kJTIwdHJ1Y2slMjBnb3VybWV0fGVufDF8fHx8MTc3MDg2MDkxNnww&ixlib=rb-4.1.0&q=80&w=1080',
-  'pizza-truck': 'https://images.unsplash.com/photo-1685478566051-8e5c5af68a58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXp6YSUyMGZvb2QlMjB0cnVja3xlbnwxfHx8fDE3NzA3ODk3NTh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-  'sushi-truck': 'https://images.unsplash.com/photo-1758369636923-96e7b94137ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXNoaSUyMGZvb2QlMjB0cnVja3xlbnwxfHx8fDE3NzA4NjA5MTV8MA&ixlib=rb-4.1.0&q=80&w=1080'
+  'ice-cream-truck-1': 'https://images.unsplash.com/photo-1523294587484-bae6cc870010?w=400&h=300&fit=crop&crop=center',
+  'ice-cream-truck-2': 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&h=300&fit=crop&crop=center',
+  'ice-cream-truck-3': 'https://images.unsplash.com/photo-1625869016774-3a92be1f3460?w=400&h=300&fit=crop&crop=center',
+  'ice-cream-truck-4': 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400&h=300&fit=crop&crop=center'
 };
 
 export default function MyTrucksManagement({
@@ -54,7 +54,7 @@ export default function MyTrucksManagement({
             <Truck className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-gray-900 mb-2">No Trucks Yet</h2>
             <p className="text-gray-600 mb-6">
-              Add your first food truck to start receiving requests and broadcasting your location
+              Add your first ice cream truck to start receiving requests and broadcasting your location
             </p>
             <Button
               onClick={() => onNavigate('add-edit-truck')}
@@ -104,7 +104,18 @@ export default function MyTrucksManagement({
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h3 className="text-lg font-bold text-gray-900 mb-1">{truck.name}</h3>
-                        <Badge variant="outline">{truck.foodType}</Badge>
+                        <div className="flex flex-wrap gap-1">
+                          {truck.flavorCategories.slice(0, 2).map((category, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {category}
+                            </Badge>
+                          ))}
+                          {truck.flavorCategories.length > 2 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{truck.flavorCategories.length - 2}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -123,21 +134,33 @@ export default function MyTrucksManagement({
 
                     {/* Actions */}
                     <div className="flex gap-2">
-                      <Button
-                        onClick={() => onEditTruck(truck)}
-                        variant="outline"
-                        className="flex-1"
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </Button>
+                      {truck.status === 'live' ? (
+                        <Button
+                          onClick={() => onNavigate('live-broadcasting')}
+                          className="flex-1 bg-green-500 hover:bg-green-600"
+                        >
+                          <Radio className="w-4 h-4 mr-2 animate-pulse" />
+                          Broadcasting
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            onClick={() => onEditTruck(truck)}
+                            variant="outline"
+                            className="flex-1"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="flex-1 text-red-600 border-red-200 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>

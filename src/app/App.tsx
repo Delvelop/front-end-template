@@ -81,6 +81,7 @@ export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [selectedTruck, setSelectedTruck] = useState<IceCreamTruck | null>(null);
   const [selectedTruckForEdit, setSelectedTruckForEdit] = useState<IceCreamTruck | null>(null);
+  const [broadcastingTruckId, setBroadcastingTruckId] = useState<string | null>(null);
 
   // Mock ice cream trucks data
   const [iceCreamTrucks, setIceCreamTrucks] = useState<IceCreamTruck[]>([
@@ -273,6 +274,42 @@ export default function App() {
     setSelectedTruckForEdit(null);
   };
 
+  const handleStartBroadcasting = (truckId: string) => {
+    console.log('handleStartBroadcasting called with truckId:', truckId);
+    setBroadcastingTruckId(truckId);
+    // Update the truck status to 'live'
+    setIceCreamTrucks(trucks =>
+      trucks.map(truck =>
+        truck.id === truckId
+          ? { ...truck, status: 'live' as const }
+          : truck.ownerId === user?.id
+          ? { ...truck, status: 'static' as const } // Set other owned trucks to static
+          : truck
+      )
+    );
+    console.log('Broadcasting truck ID set to:', truckId);
+  };
+
+  const handleStopBroadcasting = () => {
+    if (broadcastingTruckId) {
+      setBroadcastingTruckId(null);
+      // Update the truck status to 'static'
+      setIceCreamTrucks(trucks =>
+        trucks.map(truck =>
+          truck.id === broadcastingTruckId
+            ? { ...truck, status: 'static' as const }
+            : truck
+        )
+      );
+    }
+  };
+
+  const getBroadcastingTruck = () => {
+    return broadcastingTruckId
+      ? iceCreamTrucks.find(truck => truck.id === broadcastingTruckId)
+      : null;
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       // Auth screens
@@ -366,7 +403,15 @@ export default function App() {
           />
         );
       case 'live-broadcasting':
-        return <LiveBroadcastingScreen onNavigate={navigate} />;
+        return (
+          <LiveBroadcastingScreen
+            onNavigate={navigate}
+            trucks={iceCreamTrucks.filter(t => t.ownerId === user?.id)}
+            broadcastingTruckId={broadcastingTruckId}
+            onStartBroadcasting={handleStartBroadcasting}
+            onStopBroadcasting={handleStopBroadcasting}
+          />
+        );
       case 'truck-requests':
         return (
           <TruckRequestsManagement
