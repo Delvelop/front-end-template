@@ -6,20 +6,20 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
-import { FoodTruck } from '../../App';
+import { IceCreamTruck } from '../../App';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 interface TruckDetailsScreenProps {
-  truck: FoodTruck | null;
+  truck: IceCreamTruck | null;
   onNavigate: (screen: string) => void;
   onSendRequest: (message: string, shareLocation: boolean) => void;
 }
 
 const truckImages: { [key: string]: string } = {
-  'taco-truck': 'https://images.unsplash.com/photo-1630165683188-4f2e2bbaa52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb29kJTIwdHJ1Y2slMjB0YWNvcyUyMG1leGljYW58ZW58MXx8fHwxNzcwODYwOTE0fDA&ixlib=rb-4.1.0&q=80&w=1080',
-  'burger-truck': 'https://images.unsplash.com/photo-1760008018960-a3a39c44e052?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXJnZXIlMjBmb29kJTIwdHJ1Y2slMjBnb3VybWV0fGVufDF8fHx8MTc3MDg2MDkxNnww&ixlib=rb-4.1.0&q=80&w=1080',
-  'pizza-truck': 'https://images.unsplash.com/photo-1685478566051-8e5c5af68a58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwaXp6YSUyMGZvb2QlMjB0cnVja3xlbnwxfHx8fDE3NzA3ODk3NTh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-  'sushi-truck': 'https://images.unsplash.com/photo-1758369636923-96e7b94137ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXNoaSUyMGZvb2QlMjB0cnVja3xlbnwxfHx8fDE3NzA4NjA5MTV8MA&ixlib=rb-4.1.0&q=80&w=1080'
+  'ice-cream-truck-1': 'https://images.unsplash.com/photo-1523294587484-bae6cc870010?w=400&h=300&fit=crop&crop=center',
+  'ice-cream-truck-2': 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&h=300&fit=crop&crop=center',
+  'ice-cream-truck-3': 'https://images.unsplash.com/photo-1625869016774-3a92be1f3460?w=400&h=300&fit=crop&crop=center',
+  'ice-cream-truck-4': 'https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400&h=300&fit=crop&crop=center'
 };
 
 export default function TruckDetailsScreen({
@@ -77,9 +77,18 @@ export default function TruckDetailsScreen({
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{truck.name}</h1>
           <div className="flex items-center gap-3 mb-3">
-            <Badge variant="outline" className="text-base px-3 py-1">
-              {truck.foodType}
-            </Badge>
+            <div className="flex flex-wrap gap-2">
+              {truck.flavorCategories.slice(0, 3).map((category, index) => (
+                <Badge key={index} variant="outline" className="text-sm px-2 py-1">
+                  {category}
+                </Badge>
+              ))}
+              {truck.flavorCategories.length > 3 && (
+                <Badge variant="outline" className="text-sm px-2 py-1">
+                  +{truck.flavorCategories.length - 3} more
+                </Badge>
+              )}
+            </div>
             <div className="flex items-center">
               <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 mr-1" />
               <span className="text-lg font-semibold">{truck.rating}</span>

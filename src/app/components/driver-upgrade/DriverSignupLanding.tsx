@@ -27,18 +27,18 @@ export default function DriverSignupLanding({ onNavigate }: DriverSignupLandingP
             <Truck className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            Start Earning with Your Food Truck
+            Start Earning with Your Ice Cream Truck
           </h1>
           <p className="text-gray-600 text-lg">
-            Join thousands of drivers already connecting with hungry customers
+            Join thousands of drivers already bringing joy to families and kids
           </p>
         </div>
 
         {/* Hero Image */}
         <div className="relative h-48 rounded-2xl overflow-hidden mb-8">
           <ImageWithFallback
-            src="https://images.unsplash.com/photo-1762908407323-28e9a9efd0be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb29kJTIwdHJ1Y2slMjBkcml2ZXIlMjBidXNpbmVzcyUyMG93bmVyfGVufDF8fHx8MTc3MDg2MTAwMnww&ixlib=rb-4.1.0&q=80&w=1080"
-            alt="Food truck driver"
+            src="https://images.unsplash.com/photo-1576880782960-451b92e4c3c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpY2UlMjBjcmVhbSUyMHRydWNrfGVufDF8fHx8MTc3MDg2MDkxN3ww&ixlib=rb-4.1.0&q=80&w=1080"
+            alt="Ice cream truck driver"
             className="w-full h-full object-cover"
           />
         </div>

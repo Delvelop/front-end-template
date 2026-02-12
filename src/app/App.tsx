@@ -35,7 +35,6 @@ export interface User {
   email: string;
   firstName: string;
   homeCity: string;
-  foodPreferences: string[];
   role: UserRole;
   driverInfo?: {
     licenseNumber?: string;
@@ -44,11 +43,11 @@ export interface User {
   };
 }
 
-export interface FoodTruck {
+export interface IceCreamTruck {
   id: string;
   name: string;
   ownerId: string;
-  foodType: string;
+  flavorCategories: string[];
   description: string;
   status: 'live' | 'static' | 'offline';
   location: {
@@ -80,66 +79,66 @@ export interface Request {
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<string>('welcome');
   const [user, setUser] = useState<User | null>(null);
-  const [selectedTruck, setSelectedTruck] = useState<FoodTruck | null>(null);
-  const [selectedTruckForEdit, setSelectedTruckForEdit] = useState<FoodTruck | null>(null);
+  const [selectedTruck, setSelectedTruck] = useState<IceCreamTruck | null>(null);
+  const [selectedTruckForEdit, setSelectedTruckForEdit] = useState<IceCreamTruck | null>(null);
 
-  // Mock food trucks data
-  const [foodTrucks] = useState<FoodTruck[]>([
+  // Mock ice cream trucks data
+  const [iceCreamTrucks, setIceCreamTrucks] = useState<IceCreamTruck[]>([
     {
       id: '1',
-      name: 'Taco Paradise',
+      name: 'Sweet Dreams Ice Cream',
       ownerId: 'driver1',
-      foodType: 'Tacos',
-      description: 'Authentic Mexican street tacos with homemade tortillas',
+      flavorCategories: ['Classic', 'Premium', 'Vegan'],
+      description: 'Artisanal ice cream made fresh daily with premium ingredients',
       status: 'live',
-      location: { lat: 37.7749, lng: -122.4194 },
+      location: { lat: 37.7849, lng: -122.4194 }, // Union Square area
       distance: '0.3 miles',
       rating: 4.8,
       schedule: 'Mon-Fri: 11am-9pm',
       contact: '(555) 123-4567',
-      photoUrl: 'taco-truck'
+      photoUrl: 'ice-cream-truck-1'
     },
     {
       id: '2',
-      name: 'Burger Boss',
+      name: 'Frosty Delights',
       ownerId: 'driver2',
-      foodType: 'Burgers',
-      description: 'Gourmet burgers made with locally sourced ingredients',
+      flavorCategories: ['Soft Serve', 'Novelties', 'Shakes'],
+      description: 'Classic soft serve and frozen treats for all ages',
       status: 'live',
-      location: { lat: 37.7750, lng: -122.4190 },
+      location: { lat: 37.7659, lng: -122.4070 }, // Mission District
       distance: '0.5 miles',
       rating: 4.6,
       schedule: 'Daily: 10am-10pm',
       contact: '(555) 234-5678',
-      photoUrl: 'burger-truck'
+      photoUrl: 'ice-cream-truck-2'
     },
     {
       id: '3',
-      name: 'Pizza on Wheels',
+      name: 'Gelato Express',
       ownerId: 'driver3',
-      foodType: 'Pizza',
-      description: 'Wood-fired Neapolitan pizza made fresh',
+      flavorCategories: ['Gelato', 'Sorbet', 'Coffee'],
+      description: 'Authentic Italian gelato and refreshing sorbets',
       status: 'static',
-      location: { lat: 37.7745, lng: -122.4200 },
+      location: { lat: 37.7955, lng: -122.4058 }, // North Beach
       distance: '0.8 miles',
       rating: 4.9,
       schedule: 'Tue-Sun: 12pm-8pm',
       contact: '(555) 345-6789',
-      photoUrl: 'pizza-truck'
+      photoUrl: 'ice-cream-truck-3'
     },
     {
       id: '4',
-      name: 'Sushi Express',
+      name: 'Chill Zone',
       ownerId: 'driver4',
-      foodType: 'Sushi',
-      description: 'Fresh sushi rolls and poke bowls',
-      status: 'live',
-      location: { lat: 37.7755, lng: -122.4185 },
+      flavorCategories: ['Rolled Ice Cream', 'Bubble Tea', 'Frozen Yogurt'],
+      description: 'Trendy rolled ice cream and frozen yogurt creations',
+      status: 'offline',
+      location: { lat: 37.7599, lng: -122.4148 }, // Castro District
       distance: '1.2 miles',
       rating: 4.7,
       schedule: 'Mon-Sat: 11am-9pm',
       contact: '(555) 456-7890',
-      photoUrl: 'sushi-truck'
+      photoUrl: 'ice-cream-truck-4'
     }
   ]);
 
@@ -149,8 +148,8 @@ export default function App() {
       userId: 'user1',
       userName: 'John Doe',
       truckId: '1',
-      truckName: 'Taco Paradise',
-      message: 'Can you come to Mission District?',
+      truckName: 'Sweet Dreams Ice Cream',
+      message: 'Can you come to the park? Kids want ice cream!',
       status: 'pending',
       timestamp: new Date(Date.now() - 1000 * 60 * 15),
       location: { lat: 37.7749, lng: -122.4194 }
@@ -173,7 +172,6 @@ export default function App() {
       email,
       firstName: 'John',
       homeCity: 'San Francisco',
-      foodPreferences: ['Tacos', 'Burgers', 'Pizza'],
       role: 'user'
     };
     setUser(mockUser);
@@ -186,7 +184,6 @@ export default function App() {
       email: data.email,
       firstName: data.firstName,
       homeCity: data.homeCity,
-      foodPreferences: data.foodPreferences,
       role: 'user'
     };
     setUser(newUser);
@@ -248,6 +245,34 @@ export default function App() {
     }
   };
 
+  const handleSaveTruck = (truckData: any) => {
+    if (selectedTruckForEdit) {
+      // Update existing truck
+      setIceCreamTrucks(iceCreamTrucks.map(truck =>
+        truck.id === selectedTruckForEdit.id
+          ? { ...truck, ...truckData, id: selectedTruckForEdit.id }
+          : truck
+      ));
+    } else {
+      // Add new truck
+      const newTruck: IceCreamTruck = {
+        id: Math.random().toString(),
+        ownerId: user?.id || '',
+        name: truckData.name,
+        flavorCategories: truckData.flavorCategories || ['Classic'],
+        description: truckData.description,
+        status: 'offline',
+        location: { lat: 37.7749, lng: -122.4194 }, // Default location
+        rating: 0,
+        schedule: truckData.schedule,
+        contact: truckData.contact,
+        photoUrl: 'ice-cream-truck-1' // Default photo
+      };
+      setIceCreamTrucks([...iceCreamTrucks, newTruck]);
+    }
+    setSelectedTruckForEdit(null);
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       // Auth screens
@@ -265,7 +290,7 @@ export default function App() {
         return (
           <HomeMapView
             user={user}
-            trucks={foodTrucks}
+            trucks={iceCreamTrucks}
             onNavigate={navigate}
             onSelectTruck={(truck) => navigate('truck-details', { truck })}
             onBecomeDriver={handleBecomeDriver}
@@ -317,9 +342,9 @@ export default function App() {
         return (
           <DriverDashboard
             user={user}
-            trucks={foodTrucks.filter(t => t.ownerId === user?.id)}
-            requests={requests.filter(r => 
-              foodTrucks.some(t => t.id === r.truckId && t.ownerId === user?.id)
+            trucks={iceCreamTrucks.filter(t => t.ownerId === user?.id)}
+            requests={requests.filter(r =>
+              iceCreamTrucks.some(t => t.id === r.truckId && t.ownerId === user?.id)
             )}
             onNavigate={navigate}
           />
@@ -327,7 +352,7 @@ export default function App() {
       case 'my-trucks':
         return (
           <MyTrucksManagement
-            trucks={foodTrucks.filter(t => t.ownerId === user?.id)}
+            trucks={iceCreamTrucks.filter(t => t.ownerId === user?.id)}
             onNavigate={navigate}
             onEditTruck={(truck) => navigate('add-edit-truck', { truckForEdit: truck })}
           />
@@ -337,6 +362,7 @@ export default function App() {
           <AddEditTruckScreen
             truck={selectedTruckForEdit}
             onNavigate={navigate}
+            onSaveTruck={handleSaveTruck}
           />
         );
       case 'live-broadcasting':
@@ -344,12 +370,12 @@ export default function App() {
       case 'truck-requests':
         return (
           <TruckRequestsManagement
-            requests={requests.filter(r => 
-              foodTrucks.some(t => t.id === r.truckId && t.ownerId === user?.id)
+            requests={requests.filter(r =>
+              iceCreamTrucks.some(t => t.id === r.truckId && t.ownerId === user?.id)
             )}
             onNavigate={navigate}
             onUpdateRequest={(requestId, status) => {
-              setRequests(requests.map(r => 
+              setRequests(requests.map(r =>
                 r.id === requestId ? { ...r, status } : r
               ));
             }}

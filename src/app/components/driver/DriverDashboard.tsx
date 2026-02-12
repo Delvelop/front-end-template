@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Truck, Radio, MessageSquare, DollarSign, Plus, TrendingUp, CheckCircle, LayoutDashboard, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
-import { User as UserType, FoodTruck, Request } from '../../App';
+import { User as UserType, IceCreamTruck, Request } from '../../App';
 
 interface DriverDashboardProps {
   user: UserType | null;
-  trucks: FoodTruck[];
+  trucks: IceCreamTruck[];
   requests: Request[];
   onNavigate: (screen: string) => void;
 }
@@ -18,6 +18,8 @@ export default function DriverDashboard({
   requests,
   onNavigate
 }: DriverDashboardProps) {
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(true);
+
   if (!user) return null;
 
   const liveTrucks = trucks.filter(t => t.status === 'live').length;
@@ -40,19 +42,27 @@ export default function DriverDashboard({
 
       <div className="px-6 py-6">
         {/* Verification Success Banner */}
-        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 mb-6 text-white">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold mb-2">You're All Set!</h2>
-              <p className="text-green-50 mb-4">
-                Your driver account is verified and active. You can now broadcast your location and start receiving requests.
-              </p>
+        {showWelcomeBanner && (
+          <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 mb-6 text-white">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold mb-2">You're All Set!</h2>
+                <p className="text-green-50 mb-4">
+                  Your driver account is verified and active. You can now broadcast your location and start receiving requests.
+                </p>
+                <Button
+                  onClick={() => setShowWelcomeBanner(false)}
+                  className="bg-white text-green-600 hover:bg-green-50 h-10 px-6"
+                >
+                  OK, Got It!
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-4 mb-6">
@@ -84,8 +94,14 @@ export default function DriverDashboard({
           <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">
             <Button
-              onClick={() => onNavigate('live-broadcasting')}
-              className="h-24 bg-green-500 hover:bg-green-600 flex flex-col items-center justify-center"
+              onClick={() => trucks.length > 0 ? onNavigate('live-broadcasting') : null}
+              disabled={trucks.length === 0}
+              className={`h-24 flex flex-col items-center justify-center ${
+                trucks.length === 0
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600'
+              }`}
+              title={trucks.length === 0 ? 'Add a truck first to go live' : 'Start broadcasting your location'}
             >
               <Radio className="w-6 h-6 mb-2" />
               <span>Go Live</span>
@@ -118,7 +134,7 @@ export default function DriverDashboard({
               <Truck className="w-12 h-12 text-gray-400 mx-auto mb-3" />
               <h3 className="font-bold text-gray-900 mb-2">No Trucks Yet</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Add your first food truck to get started
+                Add your first ice cream truck to get started
               </p>
               <Button
                 onClick={() => onNavigate('add-edit-truck')}

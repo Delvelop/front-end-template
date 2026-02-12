@@ -4,24 +4,24 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { FoodTruck } from '../../App';
+import { IceCreamTruck } from '../../App';
 import { toast } from 'sonner';
 
 interface AddEditTruckScreenProps {
-  truck?: FoodTruck | null;
+  truck?: IceCreamTruck | null;
   onNavigate: (screen: string) => void;
+  onSaveTruck: (truckData: any) => void;
 }
 
-const foodTypes = ['Tacos', 'Burgers', 'Pizza', 'Sushi', 'Ice Cream', 'BBQ', 'Asian', 'Mediterranean', 'Sandwiches', 'Desserts'];
 
 export default function AddEditTruckScreen({
   truck,
-  onNavigate
+  onNavigate,
+  onSaveTruck
 }: AddEditTruckScreenProps) {
   const [formData, setFormData] = useState({
     name: truck?.name || '',
-    foodType: truck?.foodType || '',
+    flavorCategories: truck?.flavorCategories || ['Classic'],
     description: truck?.description || '',
     schedule: truck?.schedule || '',
     contact: truck?.contact || '',
@@ -30,6 +30,16 @@ export default function AddEditTruckScreen({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Save the truck data
+    onSaveTruck({
+      name: formData.name,
+      flavorCategories: formData.flavorCategories,
+      description: formData.description,
+      schedule: formData.schedule,
+      contact: formData.contact,
+    });
+
     toast.success(truck ? 'Truck updated successfully!' : 'Truck added successfully!');
     setTimeout(() => {
       onNavigate('my-trucks');
@@ -100,7 +110,7 @@ export default function AddEditTruckScreen({
             <Input
               id="name"
               type="text"
-              placeholder="e.g., Taco Paradise"
+              placeholder="e.g., Sweet Dreams Ice Cream"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
@@ -108,27 +118,6 @@ export default function AddEditTruckScreen({
             />
           </div>
 
-          {/* Food Type */}
-          <div>
-            <Label htmlFor="foodType">
-              Food Type <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.foodType}
-              onValueChange={(value) => setFormData({ ...formData, foodType: value })}
-            >
-              <SelectTrigger className="mt-1.5">
-                <SelectValue placeholder="Select food type" />
-              </SelectTrigger>
-              <SelectContent>
-                {foodTypes.map(type => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Description */}
           <div>
@@ -137,7 +126,7 @@ export default function AddEditTruckScreen({
             </Label>
             <Textarea
               id="description"
-              placeholder="Tell customers about your food truck..."
+              placeholder="Tell customers about your ice cream truck..."
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               required
@@ -145,7 +134,7 @@ export default function AddEditTruckScreen({
               rows={4}
             />
             <p className="text-xs text-gray-500 mt-1.5">
-              Describe what makes your food truck special
+              Describe what makes your ice cream truck special
             </p>
           </div>
 
@@ -184,7 +173,7 @@ export default function AddEditTruckScreen({
           {/* Info Box */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-900">
-              <span className="font-semibold">Tip:</span> Provide accurate and detailed information to help customers find and choose your food truck.
+              <span className="font-semibold">Tip:</span> Provide accurate and detailed information to help customers find and choose your ice cream truck.
             </p>
           </div>
         </form>
@@ -203,7 +192,7 @@ export default function AddEditTruckScreen({
           <Button
             onClick={handleSubmit}
             className="flex-1 h-12 bg-orange-500 hover:bg-orange-600"
-            disabled={!formData.name || !formData.foodType || !formData.description || !formData.schedule || !formData.contact}
+            disabled={!formData.name || !formData.description || !formData.schedule || !formData.contact}
           >
             {truck ? 'Save Changes' : 'Add Truck'}
           </Button>

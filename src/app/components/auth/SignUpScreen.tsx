@@ -10,7 +10,6 @@ interface SignUpScreenProps {
   onNavigate: (screen: string) => void;
 }
 
-const foodPreferenceOptions = ['Tacos', 'Burgers', 'Pizza', 'Sushi', 'Ice Cream', 'Popcorn'];
 
 export default function SignUpScreen({ onSignUp, onNavigate }: SignUpScreenProps) {
   const [formData, setFormData] = useState({
@@ -18,17 +17,8 @@ export default function SignUpScreen({ onSignUp, onNavigate }: SignUpScreenProps
     password: '',
     firstName: '',
     homeCity: '',
-    foodPreferences: [] as string[]
   });
 
-  const togglePreference = (preference: string) => {
-    setFormData(prev => ({
-      ...prev,
-      foodPreferences: prev.foodPreferences.includes(preference)
-        ? prev.foodPreferences.filter(p => p !== preference)
-        : [...prev.foodPreferences, preference]
-    }));
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +40,7 @@ export default function SignUpScreen({ onSignUp, onNavigate }: SignUpScreenProps
       {/* Content */}
       <div className="px-6 py-8 max-w-md mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-        <p className="text-gray-600 mb-8">Join to discover food trucks near you</p>
+        <p className="text-gray-600 mb-8">Join to discover ice cream trucks near you</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email */}
@@ -113,26 +103,6 @@ export default function SignUpScreen({ onSignUp, onNavigate }: SignUpScreenProps
             />
           </div>
 
-          {/* Food Preferences */}
-          <div>
-            <Label>Food Preferences (Select all that apply)</Label>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {foodPreferenceOptions.map(preference => (
-                <Badge
-                  key={preference}
-                  variant={formData.foodPreferences.includes(preference) ? 'default' : 'outline'}
-                  className={`cursor-pointer px-4 py-2 ${
-                    formData.foodPreferences.includes(preference)
-                      ? 'bg-orange-500 hover:bg-orange-600'
-                      : 'hover:bg-gray-100'
-                  }`}
-                  onClick={() => togglePreference(preference)}
-                >
-                  {preference}
-                </Badge>
-              ))}
-            </div>
-          </div>
 
           {/* Submit Button */}
           <Button

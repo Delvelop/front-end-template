@@ -19,12 +19,12 @@ export default function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
 
         {/* App Name */}
         <h1 className="text-4xl font-bold text-white mb-4">
-          Food Truck Tracker
+          Truck Duck Go
         </h1>
 
         {/* Tagline */}
         <p className="text-xl text-orange-50 mb-12">
-          Find Food Trucks Near You
+          Find Ice Cream Trucks Near You
         </p>
 
         {/* Location Icon */}
@@ -52,7 +52,7 @@ export default function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
 
         {/* Location Permission Notice */}
         <div className="mt-12 text-sm text-orange-50 opacity-75">
-          <p>This app requires location permissions to find nearby food trucks</p>
+          <p>   This app requires location permissions to find nearby ice cream trucks</p>
         </div>
       </div>
     </div>
