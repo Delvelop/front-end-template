@@ -36,6 +36,12 @@ export interface User {
   firstName: string;
   homeCity: string;
   role: UserRole;
+  favoriteTrucks: string[]; // Array of truck IDs
+  notificationSettings: {
+    favoriteTruckBroadcast: boolean;
+    newTrucksInArea: boolean;
+    generalUpdates: boolean;
+  };
   driverInfo?: {
     licenseNumber?: string;
     businessName?: string;
@@ -56,6 +62,7 @@ export interface IceCreamTruck {
   };
   distance?: string;
   rating: number;
+  reviewCount: number;
   schedule: string;
   contact: string;
   photoUrl: string;
@@ -76,12 +83,72 @@ export interface Request {
   };
 }
 
+export interface Report {
+  id: string;
+  reporterId: string;
+  reporterName: string;
+  type: 'bug' | 'inappropriate-truck' | 'inappropriate-user' | 'spam' | 'other';
+  category: 'technical' | 'content' | 'behavior' | 'safety' | 'other';
+  targetId?: string; // truck ID or user ID if reporting specific entity
+  targetName?: string; // truck name or user name
+  subject: string;
+  description: string;
+  priority: 'low' | 'medium' | 'high';
+  status: 'open' | 'in-review' | 'resolved' | 'closed';
+  timestamp: Date;
+  screenshots?: string[];
+}
+
+export interface Review {
+  id: string;
+  truckId: string;
+  userId: string;
+  userName: string;
+  rating: 1 | 2 | 3 | 4 | 5;
+  comment: string;
+  timestamp: Date;
+  verified?: boolean; // if user actually visited the truck
+}
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<string>('welcome');
   const [user, setUser] = useState<User | null>(null);
   const [selectedTruck, setSelectedTruck] = useState<IceCreamTruck | null>(null);
   const [selectedTruckForEdit, setSelectedTruckForEdit] = useState<IceCreamTruck | null>(null);
   const [broadcastingTruckId, setBroadcastingTruckId] = useState<string | null>(null);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([
+    {
+      id: '1',
+      truckId: '1',
+      userId: 'user2',
+      userName: 'Sarah M.',
+      rating: 5,
+      comment: 'Amazing ice cream! The best I\'ve had in the city. Highly recommend the vanilla bean.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+      verified: true
+    },
+    {
+      id: '2',
+      truckId: '1',
+      userId: 'user3',
+      userName: 'Mike R.',
+      rating: 5,
+      comment: 'Great quality and friendly service. Love that they use premium ingredients!',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+      verified: true
+    },
+    {
+      id: '3',
+      truckId: '2',
+      userId: 'user4',
+      userName: 'Emma L.',
+      rating: 4,
+      comment: 'Good soft serve, reasonable prices. Quick service even when busy.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
+      verified: true
+    }
+  ]);
 
   // Mock ice cream trucks data
   const [iceCreamTrucks, setIceCreamTrucks] = useState<IceCreamTruck[]>([
@@ -95,6 +162,7 @@ export default function App() {
       location: { lat: 37.7849, lng: -122.4194 }, // Union Square area
       distance: '0.3 miles',
       rating: 4.8,
+      reviewCount: 248,
       schedule: 'Mon-Fri: 11am-9pm',
       contact: '(555) 123-4567',
       photoUrl: 'ice-cream-truck-1'
@@ -109,6 +177,7 @@ export default function App() {
       location: { lat: 37.7659, lng: -122.4070 }, // Mission District
       distance: '0.5 miles',
       rating: 4.6,
+      reviewCount: 189,
       schedule: 'Daily: 10am-10pm',
       contact: '(555) 234-5678',
       photoUrl: 'ice-cream-truck-2'
@@ -123,6 +192,7 @@ export default function App() {
       location: { lat: 37.7955, lng: -122.4058 }, // North Beach
       distance: '0.8 miles',
       rating: 4.9,
+      reviewCount: 312,
       schedule: 'Tue-Sun: 12pm-8pm',
       contact: '(555) 345-6789',
       photoUrl: 'ice-cream-truck-3'
@@ -137,6 +207,7 @@ export default function App() {
       location: { lat: 37.7599, lng: -122.4148 }, // Castro District
       distance: '1.2 miles',
       rating: 4.7,
+      reviewCount: 156,
       schedule: 'Mon-Sat: 11am-9pm',
       contact: '(555) 456-7890',
       photoUrl: 'ice-cream-truck-4'
@@ -173,7 +244,13 @@ export default function App() {
       email,
       firstName: 'John',
       homeCity: 'San Francisco',
-      role: 'user'
+      role: 'user',
+      favoriteTrucks: [],
+      notificationSettings: {
+        favoriteTruckBroadcast: true,
+        newTrucksInArea: true,
+        generalUpdates: false
+      }
     };
     setUser(mockUser);
     navigate('home');
@@ -185,7 +262,13 @@ export default function App() {
       email: data.email,
       firstName: data.firstName,
       homeCity: data.homeCity,
-      role: 'user'
+      role: 'user',
+      favoriteTrucks: [],
+      notificationSettings: {
+        favoriteTruckBroadcast: true,
+        newTrucksInArea: true,
+        generalUpdates: false
+      }
     };
     setUser(newUser);
     navigate('home');
@@ -277,6 +360,23 @@ export default function App() {
   const handleStartBroadcasting = (truckId: string) => {
     console.log('handleStartBroadcasting called with truckId:', truckId);
     setBroadcastingTruckId(truckId);
+
+    const truck = iceCreamTrucks.find(t => t.id === truckId);
+
+    // Check if any users have this truck as favorite and should be notified
+    if (truck && user?.role === 'driver-active') {
+      // In a real app, this would send push notifications to users who have this truck favorited
+      // For demo purposes, we'll show a toast if the current user would receive the notification
+      const mockNotifyUsers = () => {
+        // Simulate checking if current user (when switched to regular user) would get notification
+        if (user?.notificationSettings.favoriteTruckBroadcast) {
+          // This simulates what other users would see
+          console.log(`Would notify users: ${truck.name} is now broadcasting!`);
+        }
+      };
+      mockNotifyUsers();
+    }
+
     // Update the truck status to 'live'
     setIceCreamTrucks(trucks =>
       trucks.map(truck =>
@@ -310,6 +410,81 @@ export default function App() {
       : null;
   };
 
+  const handleToggleFavorite = (truckId: string) => {
+    if (user) {
+      const isFavorite = user.favoriteTrucks.includes(truckId);
+      const updatedFavorites = isFavorite
+        ? user.favoriteTrucks.filter(id => id !== truckId)
+        : [...user.favoriteTrucks, truckId];
+
+      setUser({
+        ...user,
+        favoriteTrucks: updatedFavorites
+      });
+    }
+  };
+
+  const handleUpdateNotificationSettings = (settings: User['notificationSettings']) => {
+    if (user) {
+      setUser({
+        ...user,
+        notificationSettings: settings
+      });
+    }
+  };
+
+  const handleSubmitReport = (reportData: Omit<Report, 'id' | 'reporterId' | 'reporterName' | 'timestamp' | 'status'>) => {
+    if (user) {
+      const newReport: Report = {
+        id: Math.random().toString(),
+        reporterId: user.id,
+        reporterName: user.firstName,
+        timestamp: new Date(),
+        status: 'open',
+        ...reportData
+      };
+
+      setReports([...reports, newReport]);
+
+      // Show success toast
+      console.log('Report submitted:', newReport);
+      return true;
+    }
+    return false;
+  };
+
+  const handleSubmitReview = (truckId: string, rating: 1 | 2 | 3 | 4 | 5, comment: string) => {
+    if (user) {
+      const newReview: Review = {
+        id: Math.random().toString(),
+        truckId,
+        userId: user.id,
+        userName: user.firstName,
+        rating,
+        comment,
+        timestamp: new Date(),
+        verified: false // In a real app, this would be determined by visit history
+      };
+
+      setReviews([...reviews, newReview]);
+
+      // Recalculate truck rating and review count
+      const truckReviews = [...reviews, newReview].filter(r => r.truckId === truckId);
+      const averageRating = truckReviews.reduce((sum, review) => sum + review.rating, 0) / truckReviews.length;
+
+      setIceCreamTrucks(trucks =>
+        trucks.map(truck =>
+          truck.id === truckId
+            ? { ...truck, rating: Math.round(averageRating * 10) / 10, reviewCount: truckReviews.length }
+            : truck
+        )
+      );
+
+      return true;
+    }
+    return false;
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       // Auth screens
@@ -331,23 +506,33 @@ export default function App() {
             onNavigate={navigate}
             onSelectTruck={(truck) => navigate('truck-details', { truck })}
             onBecomeDriver={handleBecomeDriver}
+            onToggleFavorite={handleToggleFavorite}
           />
         );
       case 'truck-details':
         return (
           <TruckDetailsScreen
             truck={selectedTruck}
+            user={user}
+            reviews={reviews.filter(r => r.truckId === selectedTruck?.id)}
             onNavigate={navigate}
             onSendRequest={handleSendRequest}
+            onToggleFavorite={handleToggleFavorite}
+            onSubmitReport={handleSubmitReport}
+            onSubmitReview={handleSubmitReview}
           />
         );
       case 'user-profile':
         return (
           <UserProfileScreen
             user={user}
+            trucks={iceCreamTrucks}
             onNavigate={navigate}
             onLogout={handleLogout}
             onBecomeDriver={handleBecomeDriver}
+            onToggleFavorite={handleToggleFavorite}
+            onUpdateNotificationSettings={handleUpdateNotificationSettings}
+            onSubmitReport={handleSubmitReport}
           />
         );
       case 'request-history':

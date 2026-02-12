@@ -1,18 +1,26 @@
 import React, { useState } from 'react';
-import { ArrowLeft, MapPin, Clock, Phone, Star, Radio, MessageSquare } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Phone, Star, Radio, MessageSquare, Heart, Flag, CheckCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
-import { IceCreamTruck } from '../../App';
+import { IceCreamTruck, User, Report, Review } from '../../App';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
+import ReportModal from '../common/ReportModal';
+import ReviewModal from '../common/ReviewModal';
+import { toast } from 'sonner';
 
 interface TruckDetailsScreenProps {
   truck: IceCreamTruck | null;
+  user: User | null;
+  reviews: Review[];
   onNavigate: (screen: string) => void;
   onSendRequest: (message: string, shareLocation: boolean) => void;
+  onToggleFavorite: (truckId: string) => void;
+  onSubmitReport: (reportData: Omit<Report, 'id' | 'reporterId' | 'reporterName' | 'timestamp' | 'status'>) => boolean;
+  onSubmitReview: (truckId: string, rating: 1 | 2 | 3 | 4 | 5, comment: string) => boolean;
 }
 
 const truckImages: { [key: string]: string } = {
@@ -24,22 +32,59 @@ const truckImages: { [key: string]: string } = {
 
 export default function TruckDetailsScreen({
   truck,
+  user,
+  reviews,
   onNavigate,
-  onSendRequest
+  onSendRequest,
+  onToggleFavorite,
+  onSubmitReport,
+  onSubmitReview
 }: TruckDetailsScreenProps) {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestMessage, setRequestMessage] = useState('');
   const [shareLocation, setShareLocation] = useState(true);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   if (!truck) {
     return null;
   }
+
+  const isFavorite = user?.favoriteTrucks.includes(truck.id) || false;
 
   const handleSendRequest = () => {
     onSendRequest(requestMessage, shareLocation);
     setShowRequestModal(false);
     setRequestMessage('');
     setShareLocation(true);
+  };
+
+  const handleReportSubmit = (reportData: Omit<Report, 'id' | 'reporterId' | 'reporterName' | 'timestamp' | 'status'>) => {
+    const success = onSubmitReport(reportData);
+    if (success) {
+      toast.success('Report submitted successfully! We\'ll review it within 24 hours.');
+    }
+    return success;
+  };
+
+  const handleReviewSubmit = (rating: 1 | 2 | 3 | 4 | 5, comment: string) => {
+    const success = onSubmitReview(truck.id, rating, comment);
+    if (success) {
+      toast.success('Review submitted successfully! Thank you for your feedback.');
+    }
+    return success;
+  };
+
+  const formatTimestamp = (timestamp: Date) => {
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - timestamp.getTime()) / (1000 * 60 * 60));
+
+    if (diffInHours < 24) {
+      return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+    }
   };
 
   return (
@@ -56,6 +101,18 @@ export default function TruckDetailsScreen({
           className="absolute top-4 left-4 p-2 bg-white rounded-full shadow-lg"
         >
           <ArrowLeft className="w-6 h-6 text-gray-900" />
+        </button>
+        <button
+          onClick={() => onToggleFavorite(truck.id)}
+          className="absolute top-4 left-16 p-2 bg-white rounded-full shadow-lg"
+        >
+          <Heart className={`w-6 h-6 ${isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} />
+        </button>
+        <button
+          onClick={() => setShowReportModal(true)}
+          className="absolute top-4 left-28 p-2 bg-white rounded-full shadow-lg"
+        >
+          <Flag className="w-6 h-6 text-gray-400 hover:text-red-500" />
         </button>
         <Badge
           className={`absolute top-4 right-4 ${
@@ -92,7 +149,7 @@ export default function TruckDetailsScreen({
             <div className="flex items-center">
               <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 mr-1" />
               <span className="text-lg font-semibold">{truck.rating}</span>
-              <span className="text-gray-500 ml-1">(248 reviews)</span>
+              <span className="text-gray-500 ml-1">({truck.reviewCount} reviews)</span>
             </div>
           </div>
           <div className="flex items-center text-gray-600">
@@ -127,46 +184,78 @@ export default function TruckDetailsScreen({
 
         {/* Reviews Section */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3">Recent Reviews</h2>
-          <div className="space-y-4">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center mb-2">
-                <div className="w-10 h-10 bg-orange-200 rounded-full flex items-center justify-center mr-3">
-                  <span className="font-semibold text-orange-700">JD</span>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">John Doe</p>
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm">
-                Amazing tacos! The best I've had in the city. Highly recommend the carnitas.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center mb-2">
-                <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center mr-3">
-                  <span className="font-semibold text-blue-700">SA</span>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">Sarah Anderson</p>
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <p className="text-gray-700 text-sm">
-                Great food and friendly service. Love that they're often in my neighborhood!
-              </p>
-            </div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-900">Reviews ({reviews.length})</h2>
+            <Button
+              onClick={() => setShowReviewModal(true)}
+              variant="outline"
+              size="sm"
+              className="text-orange-600 border-orange-200 hover:bg-orange-50"
+            >
+              <Star className="w-4 h-4 mr-1" />
+              Write Review
+            </Button>
           </div>
+
+          {reviews.length === 0 ? (
+            <div className="bg-gray-50 rounded-lg p-8 text-center">
+              <Star className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-600 mb-2">No reviews yet</p>
+              <p className="text-sm text-gray-500">Be the first to share your experience!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {reviews.slice(0, 3).map((review) => (
+                <div key={review.id} className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-orange-200 rounded-full flex items-center justify-center mr-3">
+                        <span className="font-semibold text-orange-700">
+                          {review.userName.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-gray-900">{review.userName}</p>
+                          {review.verified && (
+                            <CheckCircle className="w-4 h-4 text-green-500" title="Verified customer" />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${
+                                i < review.rating
+                                  ? 'text-yellow-500 fill-yellow-500'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {formatTimestamp(review.timestamp)}
+                    </span>
+                  </div>
+                  {review.comment && (
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {review.comment}
+                    </p>
+                  )}
+                </div>
+              ))}
+
+              {reviews.length > 3 && (
+                <div className="text-center pt-2">
+                  <button className="text-orange-600 text-sm font-medium hover:text-orange-700">
+                    View all {reviews.length} reviews
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -236,6 +325,24 @@ export default function TruckDetailsScreen({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Report Modal */}
+      <ReportModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        onSubmit={handleReportSubmit}
+        targetType="truck"
+        targetId={truck.id}
+        targetName={truck.name}
+      />
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        onSubmit={handleReviewSubmit}
+        truckName={truck.name}
+      />
     </div>
   );
 }

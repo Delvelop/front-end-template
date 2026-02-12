@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { MapPin, List, User, Star, Navigation, Radio } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { MapPin, List, User, Star, Navigation, Radio, Heart } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { IceCreamTruck, User as UserType } from '../../App';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import Map from '../ui/Map';
+import { toast } from 'sonner';
 
 interface HomeMapViewProps {
   user: UserType | null;
@@ -12,6 +13,7 @@ interface HomeMapViewProps {
   onNavigate: (screen: string) => void;
   onSelectTruck: (truck: IceCreamTruck) => void;
   onBecomeDriver: () => void;
+  onToggleFavorite: (truckId: string) => void;
 }
 
 
@@ -27,12 +29,97 @@ export default function HomeMapView({
   trucks,
   onNavigate,
   onSelectTruck,
-  onBecomeDriver
+  onBecomeDriver,
+  onToggleFavorite
 }: HomeMapViewProps) {
   const [showListView, setShowListView] = useState(false);
   const [userLocation] = useState({ lat: 37.7749, lng: -122.4194 }); // Mock user location
+  const [previousTruckStatuses, setPreviouseTruckStatuses] = useState<{[key: string]: string}>({});
+  const [notifiedTrucks, setNotifiedTrucks] = useState<Set<string>>(new Set()); // Track which trucks we've notified about
+  const [isInitialized, setIsInitialized] = useState(false); // Track if we've initialized the statuses
 
   const filteredTrucks = trucks;
+
+  // Memoize truck status changes to prevent unnecessary re-renders
+  const truckStatuses = useMemo(() => {
+    const statuses: {[key: string]: string} = {};
+    trucks.forEach(truck => {
+      statuses[truck.id] = truck.status;
+    });
+    return statuses;
+  }, [trucks]);
+
+  // Initialize truck statuses on first load to prevent false "newly broadcasting" notifications
+  useEffect(() => {
+    if (!isInitialized && trucks.length > 0) {
+      const initialStatuses: {[key: string]: string} = {};
+      const initialNotifiedTrucks = new Set<string>();
+
+      trucks.forEach(truck => {
+        initialStatuses[truck.id] = truck.status;
+        // If truck is already live when component mounts, mark it as already notified
+        // so we don't send notification just for loading the page
+        if (truck.status === 'live') {
+          initialNotifiedTrucks.add(truck.id);
+        }
+      });
+
+      setPreviouseTruckStatuses(initialStatuses);
+      setNotifiedTrucks(initialNotifiedTrucks);
+      setIsInitialized(true);
+      return;
+    }
+
+    // Only run notification logic after initialization
+    if (!isInitialized) return;
+
+    if (user?.notificationSettings.favoriteTruckBroadcast && user?.role !== 'driver-active' && user?.favoriteTrucks) {
+      let hasChanges = false;
+      const newNotifiedTrucks = new Set(notifiedTrucks);
+
+      trucks.forEach(truck => {
+        const wasLive = previousTruckStatuses[truck.id] === 'live';
+        const isNowLive = truck.status === 'live';
+        const isFavorite = user.favoriteTrucks.includes(truck.id);
+        const alreadyNotified = notifiedTrucks.has(truck.id);
+
+        // Only notify if: wasn't live before, is live now, is favorite, and we haven't notified yet
+        if (!wasLive && isNowLive && isFavorite && !alreadyNotified) {
+          toast(`🍦 ${truck.name} is now broadcasting!`, {
+            description: "Your favorite ice cream truck is live and taking requests.",
+            action: {
+              label: "View",
+              onClick: () => onSelectTruck(truck)
+            }
+          });
+          newNotifiedTrucks.add(truck.id);
+          hasChanges = true;
+        }
+
+        // Reset notification flag when truck goes offline
+        if (truck.status !== 'live' && notifiedTrucks.has(truck.id)) {
+          newNotifiedTrucks.delete(truck.id);
+          hasChanges = true;
+        }
+      });
+
+      if (hasChanges) {
+        setNotifiedTrucks(newNotifiedTrucks);
+      }
+    }
+
+    // Update previous statuses only if they actually changed
+    let statusesChanged = false;
+    Object.keys(truckStatuses).forEach(truckId => {
+      if (previousTruckStatuses[truckId] !== truckStatuses[truckId]) {
+        statusesChanged = true;
+      }
+    });
+
+    if (statusesChanged) {
+      setPreviouseTruckStatuses(truckStatuses);
+    }
+  }, [truckStatuses, isInitialized]); // Only depend on the memoized truck statuses and initialization state
 
   return (
     <div className="min-h-screen bg-white">
@@ -121,6 +208,19 @@ export default function HomeMapView({
                     alt={truck.name}
                     className="w-full h-full object-cover"
                   />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent card click
+                      onToggleFavorite(truck.id);
+                    }}
+                    className="absolute top-3 left-3 p-2 bg-white rounded-full shadow-lg z-10"
+                  >
+                    <Heart className={`w-5 h-5 ${
+                      user?.favoriteTrucks.includes(truck.id)
+                        ? 'text-red-500 fill-red-500'
+                        : 'text-gray-400'
+                    }`} />
+                  </button>
                   <Badge
                     className={`absolute top-3 right-3 ${
                       truck.status === 'live'
