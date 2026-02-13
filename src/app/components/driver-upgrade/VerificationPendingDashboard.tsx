@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Truck, Plus, MessageSquare, AlertCircle, CheckCircle } from 'lucide-react';
+import { Clock, Truck, Plus, MessageSquare, AlertCircle, CheckCircle, LayoutDashboard, User as UserIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { User } from '../../App';
@@ -167,6 +167,37 @@ export default function VerificationPendingDashboard({
           <Button variant="outline" className="w-full">
             Contact Support
           </Button>
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div className="flex justify-around py-3">
+          <button className="flex flex-col items-center text-orange-500">
+            <LayoutDashboard className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Dashboard</span>
+          </button>
+          <button
+            onClick={() => onNavigate('my-trucks')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <Truck className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">My Trucks</span>
+          </button>
+          <button
+            onClick={() => onNavigate('truck-requests')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <MessageSquare className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Requests</span>
+          </button>
+          <button
+            onClick={() => onNavigate('driver-profile')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <UserIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Profile</span>
+          </button>
         </div>
       </div>
     </div>
