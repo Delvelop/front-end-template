@@ -545,6 +545,7 @@ export default function App() {
             onLogout={handleLogout}
             onBecomeDriver={handleBecomeDriver}
             onToggleFavorite={handleToggleFavorite}
+            onSelectTruck={(truck) => navigate('truck-details', { truck })}
             onUpdateNotificationSettings={handleUpdateNotificationSettings}
             onSubmitReport={handleSubmitReport}
           />

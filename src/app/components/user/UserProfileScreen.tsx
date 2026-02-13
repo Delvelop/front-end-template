@@ -19,6 +19,7 @@ interface UserProfileScreenProps {
   onLogout: () => void;
   onBecomeDriver: () => void;
   onToggleFavorite: (truckId: string) => void;
+  onSelectTruck: (truck: IceCreamTruck) => void;
   onUpdateNotificationSettings: (settings: User['notificationSettings']) => void;
   onSubmitReport: (reportData: Omit<Report, 'id' | 'reporterId' | 'reporterName' | 'timestamp' | 'status'>) => boolean;
 }
@@ -37,6 +38,7 @@ export default function UserProfileScreen({
   onLogout,
   onBecomeDriver,
   onToggleFavorite,
+  onSelectTruck,
   onUpdateNotificationSettings,
   onSubmitReport
 }: UserProfileScreenProps) {
@@ -47,6 +49,8 @@ export default function UserProfileScreen({
   const [showFavorites, setShowFavorites] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showUnfavoriteDialog, setShowUnfavoriteDialog] = useState(false);
+  const [truckToUnfavorite, setTruckToUnfavorite] = useState<IceCreamTruck | null>(null);
 
   const favoriteTrucks = trucks.filter(truck => user?.favoriteTrucks.includes(truck.id));
 
@@ -65,6 +69,25 @@ export default function UserProfileScreen({
       toast.success('Report submitted successfully! We\'ll review it within 24 hours.');
     }
     return success;
+  };
+
+  const handleUnfavoriteClick = (truck: IceCreamTruck) => {
+    setTruckToUnfavorite(truck);
+    setShowUnfavoriteDialog(true);
+  };
+
+  const handleConfirmUnfavorite = () => {
+    if (truckToUnfavorite) {
+      onToggleFavorite(truckToUnfavorite.id);
+      setShowUnfavoriteDialog(false);
+      setTruckToUnfavorite(null);
+      toast.success(`${truckToUnfavorite.name} removed from favorites`);
+    }
+  };
+
+  const handleCancelUnfavorite = () => {
+    setShowUnfavoriteDialog(false);
+    setTruckToUnfavorite(null);
   };
 
   const handleDeleteAccount = () => {
@@ -165,7 +188,8 @@ export default function UserProfileScreen({
                       {favoriteTrucks.map(truck => (
                         <div
                           key={truck.id}
-                          className="flex items-center p-3 bg-white rounded-lg border border-gray-200"
+                          className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+                          onClick={() => onSelectTruck(truck)}
                         >
                           <div className="w-12 h-12 rounded-lg overflow-hidden mr-3 flex-shrink-0">
                             <ImageWithFallback
@@ -185,7 +209,10 @@ export default function UserProfileScreen({
                             </div>
                           </div>
                           <button
-                            onClick={() => onToggleFavorite(truck.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUnfavoriteClick(truck);
+                            }}
                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0"
                           >
                             <Heart className="w-4 h-4 fill-current" />
@@ -450,6 +477,37 @@ export default function UserProfileScreen({
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Delete Account
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Unfavorite Confirmation Dialog */}
+      <Dialog open={showUnfavoriteDialog} onOpenChange={setShowUnfavoriteDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Remove from Favorites</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="text-sm text-gray-600">
+              <p>
+                Are you sure you want to remove <strong>{truckToUnfavorite?.name}</strong> from your favorites?
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                onClick={handleCancelUnfavorite}
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmUnfavorite}
+                className="flex-1 bg-red-600 hover:bg-red-700"
+              >
+                Remove
               </Button>
             </div>
           </div>
