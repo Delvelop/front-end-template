@@ -8,9 +8,9 @@ import { Switch } from '../ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { IceCreamTruck, User, Report, Review } from '../../App';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { toast } from 'sonner';
 import ReportModal from '../common/ReportModal';
 import ReviewModal from '../common/ReviewModal';
-import { toast } from 'sonner';
 
 interface TruckDetailsScreenProps {
   truck: IceCreamTruck | null;
@@ -57,6 +57,12 @@ export default function TruckDetailsScreen({
     setShowRequestModal(false);
     setRequestMessage('');
     setShareLocation(true);
+
+    // Show success confirmation
+    toast.success(`Request sent to ${truck.name}!`, {
+      description: "Your request has been successfully sent to the truck driver. You'll be notified when they respond.",
+      duration: 4000
+    });
   };
 
   const handleReportSubmit = (reportData: Omit<Report, 'id' | 'reporterId' | 'reporterName' | 'timestamp' | 'status'>) => {
