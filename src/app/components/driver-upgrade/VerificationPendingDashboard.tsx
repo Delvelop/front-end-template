@@ -8,12 +8,14 @@ interface VerificationPendingDashboardProps {
   user: User | null;
   onNavigate: (screen: string) => void;
   onApprove: () => void;
+  onSwitchToUserView?: () => void;
 }
 
 export default function VerificationPendingDashboard({
   user,
   onNavigate,
-  onApprove
+  onApprove,
+  onSwitchToUserView
 }: VerificationPendingDashboardProps) {
   if (!user) return null;
 
@@ -21,7 +23,20 @@ export default function VerificationPendingDashboard({
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 z-10">
-        <h1 className="text-xl font-bold text-gray-900">Driver Dashboard</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold text-gray-900">Driver Dashboard</h1>
+          {onSwitchToUserView && (
+            <Button
+              onClick={onSwitchToUserView}
+              variant="outline"
+              size="sm"
+              className="h-8 px-3"
+            >
+              <UserIcon className="w-4 h-4 mr-1" />
+              User
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="px-6 py-6">

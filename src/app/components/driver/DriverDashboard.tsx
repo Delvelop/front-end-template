@@ -10,13 +10,15 @@ interface DriverDashboardProps {
   trucks: IceCreamTruck[];
   requests: Request[];
   onNavigate: (screen: string) => void;
+  onSwitchToUserView?: () => void;
 }
 
 export default function DriverDashboard({
   user,
   trucks,
   requests,
-  onNavigate
+  onNavigate,
+  onSwitchToUserView
 }: DriverDashboardProps) {
   const [showWelcomeBanner, setShowWelcomeBanner] = useState(true);
 
@@ -32,6 +34,17 @@ export default function DriverDashboard({
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-900">Driver Dashboard</h1>
           <div className="flex items-center gap-2">
+            {onSwitchToUserView && (
+              <Button
+                onClick={onSwitchToUserView}
+                variant="outline"
+                size="sm"
+                className="h-8 px-3"
+              >
+                <User className="w-4 h-4 mr-1" />
+                User
+              </Button>
+            )}
             <Badge className="bg-green-500">
               <CheckCircle className="w-3 h-3 mr-1" />
               Verified

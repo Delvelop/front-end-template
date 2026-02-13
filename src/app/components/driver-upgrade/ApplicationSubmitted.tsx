@@ -79,13 +79,6 @@ export default function ApplicationSubmitted({ onNavigate }: ApplicationSubmitte
           >
             Continue to Dashboard
           </Button>
-          <Button
-            onClick={() => onNavigate('home')}
-            variant="outline"
-            className="w-full h-14 text-lg"
-          >
-            Back to Home
-          </Button>
         </div>
       </div>
     </div>

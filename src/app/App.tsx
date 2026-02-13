@@ -283,6 +283,18 @@ export default function App() {
     navigate('driver-signup-landing');
   };
 
+  const handleSwitchToUserView = () => {
+    navigate('home');
+  };
+
+  const handleSwitchToDriverView = () => {
+    if (user?.role === 'driver-pending') {
+      navigate('verification-pending');
+    } else if (user?.role === 'driver-active') {
+      navigate('driver-dashboard');
+    }
+  };
+
   const handleDriverApplication = (data: any) => {
     if (user) {
       setUser({
@@ -508,6 +520,7 @@ export default function App() {
             onSelectTruck={(truck) => navigate('truck-details', { truck })}
             onBecomeDriver={handleBecomeDriver}
             onToggleFavorite={handleToggleFavorite}
+            onSwitchToDriverView={handleSwitchToDriverView}
           />
         );
       case 'truck-details':
@@ -557,6 +570,7 @@ export default function App() {
             user={user}
             onNavigate={navigate}
             onApprove={handleApproveDriver}
+            onSwitchToUserView={handleSwitchToUserView}
           />
         );
 
@@ -570,6 +584,7 @@ export default function App() {
               iceCreamTrucks.some(t => t.id === r.truckId && t.ownerId === user?.id)
             )}
             onNavigate={navigate}
+            onSwitchToUserView={handleSwitchToUserView}
           />
         );
       case 'my-trucks':

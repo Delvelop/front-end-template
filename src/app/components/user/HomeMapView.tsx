@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { MapPin, List, User, Star, Navigation, Radio, Heart } from 'lucide-react';
+import { MapPin, List, User, Star, Navigation, Radio, Heart, Truck } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { IceCreamTruck, User as UserType } from '../../App';
@@ -14,6 +14,7 @@ interface HomeMapViewProps {
   onSelectTruck: (truck: IceCreamTruck) => void;
   onBecomeDriver: () => void;
   onToggleFavorite: (truckId: string) => void;
+  onSwitchToDriverView?: () => void;
 }
 
 
@@ -30,7 +31,8 @@ export default function HomeMapView({
   onNavigate,
   onSelectTruck,
   onBecomeDriver,
-  onToggleFavorite
+  onToggleFavorite,
+  onSwitchToDriverView
 }: HomeMapViewProps) {
   const [showListView, setShowListView] = useState(false);
   const [userLocation] = useState({ lat: 37.7749, lng: -122.4194 }); // Mock user location
@@ -128,12 +130,25 @@ export default function HomeMapView({
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-bold text-gray-900">Find Ice Cream Trucks</h1>
-            <button
-              onClick={() => onNavigate('user-profile')}
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
-            >
-              <User className="w-5 h-5 text-gray-700" />
-            </button>
+            <div className="flex items-center gap-2">
+              {(user?.role === 'driver-pending' || user?.role === 'driver-active') && onSwitchToDriverView && (
+                <Button
+                  onClick={onSwitchToDriverView}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-3"
+                >
+                  <Truck className="w-4 h-4 mr-1" />
+                  Driver
+                </Button>
+              )}
+              <button
+                onClick={() => onNavigate('user-profile')}
+                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+              >
+                <User className="w-5 h-5 text-gray-700" />
+              </button>
+            </div>
           </div>
 
         </div>
