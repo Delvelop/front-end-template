@@ -19,12 +19,20 @@ const iceCreamTruckIcon = new L.Icon({
   popupAnchor: [0, -32],
 });
 
-// Custom live truck icon (pulsing)
-const liveTruckIcon = new L.Icon({
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTcgMTdIM1Y2SDdWMTdaIiBmaWxsPSIjMTBCOTgxIi8+CjxwYXRoIGQ9Ik0yMSAxN0g3VjZIMjFWMTdaIiBmaWxsPSIjMDZCNkQ0Ii8+CjxjaXJjbGUgY3g9IjkiIGN5PSIxOSIgcj0iMiIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSIxOSIgY3k9IjE5IiByPSIyIiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0xMCA4SDE4VjEwSDEwVjhaIiBmaWxsPSIjRkZGRkZGIi8+CjxwYXRoIGQ9Ik0xMSA5SDE3VjEzSDExVjlaIiBmaWxsPSIjRTZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iNCIgcj0iMiIgZmlsbD0iIzEwQjk4MSIvPgo8L3N2Zz4=',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
+// Custom mobile live truck icon (pulsing green)
+const mobileLiveTruckIcon = new L.Icon({
+  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTcgMTdIM1Y2SDdWMTdaIiBmaWxsPSIjMTBCOTgxIi8+CjxwYXRoIGQ9Ik0yMSAxN0g3VjZIMjFWMTdaIiBmaWxsPSIjMDZCNkQ0Ii8+CjxjaXJjbGUgY3g9IjkiIGN5PSIxOSIgcj0iMiIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSIxOSIgY3k9IjE5IiByPSIyIiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0xMCA4SDE4VjEwSDEwVjhaIiBmaWxsPSIjRkZGRkZGIi8+CjxwYXRoIGQ9Ik0xMSA5SDE3VjEzSDExVjlaIiBmaWxsPSIjRTZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iNCIgcj0iMyIgZmlsbD0iIzEwQjk4MSIvPgo8cGF0aCBkPSJNMTAuNSAyLjVMMTMuNSA1LjVMMTAuNSA4LjVaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPg==',
+  iconSize: [36, 36],
+  iconAnchor: [18, 36],
+  popupAnchor: [0, -36],
+});
+
+// Custom static live truck icon (pulsing blue)
+const staticLiveTruckIcon = new L.Icon({
+  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTcgMTdIM1Y2SDdWMTdaIiBmaWxsPSIjMzMzM0Y3Ii8+CjxwYXRoIGQ9Ik0yMSAxN0g3VjZIMjFWMTdaIiBmaWxsPSIjNjM2NkY3Ii8+CjxjaXJjbGUgY3g9IjkiIGN5PSIxOSIgcj0iMiIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSIxOSIgY3k9IjE5IiByPSIyIiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0xMCA4SDE4VjEwSDEwVjhaIiBmaWxsPSIjRkZGRkZGIi8+CjxwYXRoIGQ9Ik0xMSA5SDE3VjEzSDExVjlaIiBmaWxsPSIjRTZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iNCIgcj0iMyIgZmlsbD0iIzMzMzNGNyIvPgo8cGF0aCBkPSJNMTAgMkgxNFY2SDEwVjJaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPg==',
+  iconSize: [36, 36],
+  iconAnchor: [18, 36],
+  popupAnchor: [0, -36],
 });
 
 // User location icon
@@ -41,7 +49,7 @@ interface IceCreamTruck {
   ownerId: string;
   flavorCategories: string[];
   description: string;
-  status: 'live' | 'static' | 'offline';
+  status: 'live-mobile' | 'live-static' | 'offline';
   location: {
     lat: number;
     lng: number;
@@ -51,6 +59,7 @@ interface IceCreamTruck {
   schedule: string;
   contact: string;
   photoUrl: string;
+  broadcastMode?: 'mobile' | 'static';
 }
 
 interface MapProps {
@@ -88,42 +97,56 @@ export default function Map({ trucks, onTruckClick, userLocation }: MapProps) {
         )}
 
         {/* Truck markers */}
-        {trucks.map((truck) => (
-          <Marker
-            key={truck.id}
-            position={[truck.location.lat, truck.location.lng]}
-            icon={truck.status === 'live' ? liveTruckIcon : iceCreamTruckIcon}
-            eventHandlers={{
-              click: () => onTruckClick(truck),
-            }}
-          >
-            <Popup>
-              <div className="text-center min-w-48">
-                <h3 className="font-bold text-gray-900 mb-2">{truck.name}</h3>
-                <p className="text-sm text-gray-600 mb-2">{truck.description}</p>
-                <div className="flex justify-between items-center mb-2">
-                  <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                    truck.status === 'live'
-                      ? 'bg-green-100 text-green-800'
-                      : truck.status === 'static'
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {truck.status === 'live' ? 'Live' : truck.status === 'static' ? 'Open' : 'Offline'}
-                  </span>
-                  <span className="text-sm font-medium">⭐ {truck.rating}</span>
+        {trucks.map((truck) => {
+          let truckIcon = iceCreamTruckIcon;
+          if (truck.status === 'live-mobile') {
+            truckIcon = mobileLiveTruckIcon;
+          } else if (truck.status === 'live-static') {
+            truckIcon = staticLiveTruckIcon;
+          }
+
+          return (
+            <Marker
+              key={truck.id}
+              position={[truck.location.lat, truck.location.lng]}
+              icon={truckIcon}
+              eventHandlers={{
+                click: () => onTruckClick(truck),
+              }}
+            >
+              <Popup>
+                <div className="text-center min-w-48">
+                  <h3 className="font-bold text-gray-900 mb-2">{truck.name}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{truck.description}</p>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+                      truck.status === 'live-mobile'
+                        ? 'bg-green-100 text-green-800'
+                        : truck.status === 'live-static'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {truck.status === 'live-mobile'
+                        ? 'Live & Moving'
+                        : truck.status === 'live-static'
+                        ? 'Live & Parked'
+                        : 'Offline'
+                      }
+                    </span>
+                    <span className="text-sm font-medium">⭐ {truck.rating}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-3">{truck.schedule}</p>
+                  <button
+                    onClick={() => onTruckClick(truck)}
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium py-2 px-3 rounded"
+                  >
+                    View Details
+                  </button>
                 </div>
-                <p className="text-xs text-gray-500 mb-3">{truck.schedule}</p>
-                <button
-                  onClick={() => onTruckClick(truck)}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium py-2 px-3 rounded"
-                >
-                  View Details
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );

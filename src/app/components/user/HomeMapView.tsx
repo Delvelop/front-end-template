@@ -61,7 +61,7 @@ export default function HomeMapView({
         initialStatuses[truck.id] = truck.status;
         // If truck is already live when component mounts, mark it as already notified
         // so we don't send notification just for loading the page
-        if (truck.status === 'live') {
+        if (truck.status === 'live-mobile' || truck.status === 'live-static') {
           initialNotifiedTrucks.add(truck.id);
         }
       });
@@ -80,8 +80,8 @@ export default function HomeMapView({
       const newNotifiedTrucks = new Set(notifiedTrucks);
 
       trucks.forEach(truck => {
-        const wasLive = previousTruckStatuses[truck.id] === 'live';
-        const isNowLive = truck.status === 'live';
+        const wasLive = previousTruckStatuses[truck.id] === 'live-mobile' || previousTruckStatuses[truck.id] === 'live-static';
+        const isNowLive = truck.status === 'live-mobile' || truck.status === 'live-static';
         const isFavorite = user.favoriteTrucks.includes(truck.id);
         const alreadyNotified = notifiedTrucks.has(truck.id);
 
@@ -99,7 +99,7 @@ export default function HomeMapView({
         }
 
         // Reset notification flag when truck goes offline
-        if (truck.status !== 'live' && notifiedTrucks.has(truck.id)) {
+        if (truck.status !== 'live-mobile' && truck.status !== 'live-static' && notifiedTrucks.has(truck.id)) {
           newNotifiedTrucks.delete(truck.id);
           hasChanges = true;
         }
@@ -178,15 +178,19 @@ export default function HomeMapView({
           {/* Legend */}
           <div className="absolute bottom-4 left-4 bg-white rounded-lg p-3 shadow-lg z-10">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-xs text-gray-700">Live Broadcasting</span>
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-gray-700">Live & Moving</span>
             </div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-              <span className="text-xs text-gray-700">Static Location</span>
+              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-gray-700">Live & Parked</span>
+            </div>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+              <span className="text-xs text-gray-700">Offline</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
               <span className="text-xs text-gray-700">Your Location</span>
             </div>
           </div>
@@ -238,15 +242,15 @@ export default function HomeMapView({
                   </button>
                   <Badge
                     className={`absolute top-3 right-3 ${
-                      truck.status === 'live'
+                      truck.status === 'live-mobile'
                         ? 'bg-green-500'
-                        : truck.status === 'static'
+                        : truck.status === 'live-static'
                         ? 'bg-blue-500'
                         : 'bg-gray-500'
                     }`}
                   >
-                    {truck.status === 'live' && <Radio className="w-3 h-3 mr-1 animate-pulse" />}
-                    {truck.status === 'live' ? 'Live' : truck.status === 'static' ? 'Open' : 'Offline'}
+                    {(truck.status === 'live-mobile' || truck.status === 'live-static') && <Radio className="w-3 h-3 mr-1 animate-pulse" />}
+                    {truck.status === 'live-mobile' ? 'Live & Moving' : truck.status === 'live-static' ? 'Live & Parked' : 'Offline'}
                   </Badge>
                 </div>
                 <div className="p-4">

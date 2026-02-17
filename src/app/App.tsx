@@ -56,7 +56,7 @@ export interface IceCreamTruck {
   ownerId: string;
   flavorCategories: string[];
   description: string;
-  status: 'live' | 'static' | 'offline';
+  status: 'live-mobile' | 'live-static' | 'offline';
   location: {
     lat: number;
     lng: number;
@@ -67,6 +67,7 @@ export interface IceCreamTruck {
   schedule: string;
   contact: string;
   photoUrl: string;
+  broadcastMode?: 'mobile' | 'static'; // Additional field to track current broadcast mode
 }
 
 export interface Request {
@@ -159,14 +160,15 @@ export default function App() {
       ownerId: 'driver1',
       flavorCategories: ['Classic', 'Premium', 'Vegan'],
       description: 'Artisanal ice cream made fresh daily with premium ingredients',
-      status: 'live',
+      status: 'live-mobile',
       location: { lat: 37.7849, lng: -122.4194 }, // Union Square area
       distance: '0.3 miles',
       rating: 4.8,
       reviewCount: 248,
       schedule: 'Mon-Fri: 11am-9pm',
       contact: '(555) 123-4567',
-      photoUrl: 'ice-cream-truck-1'
+      photoUrl: 'ice-cream-truck-1',
+      broadcastMode: 'mobile'
     },
     {
       id: '2',
@@ -174,14 +176,15 @@ export default function App() {
       ownerId: 'driver2',
       flavorCategories: ['Soft Serve', 'Novelties', 'Shakes'],
       description: 'Classic soft serve and frozen treats for all ages',
-      status: 'live',
+      status: 'live-static',
       location: { lat: 37.7659, lng: -122.4070 }, // Mission District
       distance: '0.5 miles',
       rating: 4.6,
       reviewCount: 189,
       schedule: 'Daily: 10am-10pm',
       contact: '(555) 234-5678',
-      photoUrl: 'ice-cream-truck-2'
+      photoUrl: 'ice-cream-truck-2',
+      broadcastMode: 'static'
     },
     {
       id: '3',
@@ -189,7 +192,7 @@ export default function App() {
       ownerId: 'driver3',
       flavorCategories: ['Gelato', 'Sorbet', 'Coffee'],
       description: 'Authentic Italian gelato and refreshing sorbets',
-      status: 'static',
+      status: 'offline',
       location: { lat: 37.7955, lng: -122.4058 }, // North Beach
       distance: '0.8 miles',
       rating: 4.9,
@@ -371,8 +374,8 @@ export default function App() {
     setSelectedTruckForEdit(null);
   };
 
-  const handleStartBroadcasting = (truckId: string) => {
-    console.log('handleStartBroadcasting called with truckId:', truckId);
+  const handleStartBroadcasting = (truckId: string, mode: 'mobile' | 'static' = 'mobile') => {
+    console.log('handleStartBroadcasting called with truckId:', truckId, 'mode:', mode);
     setBroadcastingTruckId(truckId);
 
     const truck = iceCreamTrucks.find(t => t.id === truckId);
@@ -385,33 +388,34 @@ export default function App() {
         // Simulate checking if current user (when switched to regular user) would get notification
         if (user?.notificationSettings.favoriteTruckBroadcast) {
           // This simulates what other users would see
-          console.log(`Would notify users: ${truck.name} is now broadcasting!`);
+          console.log(`Would notify users: ${truck.name} is now broadcasting in ${mode} mode!`);
         }
       };
       mockNotifyUsers();
     }
 
-    // Update the truck status to 'live'
+    // Update the truck status based on broadcasting mode
+    const status = mode === 'mobile' ? 'live-mobile' : 'live-static';
     setIceCreamTrucks(trucks =>
       trucks.map(truck =>
         truck.id === truckId
-          ? { ...truck, status: 'live' as const }
+          ? { ...truck, status: status as const, broadcastMode: mode }
           : truck.ownerId === user?.id
-          ? { ...truck, status: 'static' as const } // Set other owned trucks to static
+          ? { ...truck, status: 'offline' as const } // Set other owned trucks to offline
           : truck
       )
     );
-    console.log('Broadcasting truck ID set to:', truckId);
+    console.log('Broadcasting truck ID set to:', truckId, 'with status:', status);
   };
 
   const handleStopBroadcasting = () => {
     if (broadcastingTruckId) {
       setBroadcastingTruckId(null);
-      // Update the truck status to 'static'
+      // Update the truck status to 'offline'
       setIceCreamTrucks(trucks =>
         trucks.map(truck =>
           truck.id === broadcastingTruckId
-            ? { ...truck, status: 'static' as const }
+            ? { ...truck, status: 'offline' as const, broadcastMode: undefined }
             : truck
         )
       );

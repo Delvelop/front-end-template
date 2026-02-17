@@ -111,11 +111,11 @@ export default function FavoritesScreen({
                   <div className="flex items-center mb-2">
                     <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1" />
                     <span className="text-sm text-gray-600 mr-2">{truck.rating}</span>
-                    {truck.status === 'live' && (
-                      <Badge className="bg-green-500 text-xs">Live</Badge>
+                    {truck.status === 'live-mobile' && (
+                      <Badge className="bg-green-500 text-xs">Live & Moving</Badge>
                     )}
-                    {truck.status === 'static' && (
-                      <Badge className="bg-blue-500 text-xs">Open</Badge>
+                    {truck.status === 'live-static' && (
+                      <Badge className="bg-blue-500 text-xs">Live & Parked</Badge>
                     )}
                     {truck.status === 'offline' && (
                       <Badge className="bg-gray-500 text-xs">Offline</Badge>
