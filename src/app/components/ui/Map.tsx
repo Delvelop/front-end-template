@@ -11,33 +11,121 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Custom ice cream truck icon
+// Custom ice cream truck icon (offline)
 const iceCreamTruckIcon = new L.Icon({
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTcgMTdIM1Y2SDdWMTdaIiBmaWxsPSIjRkY2QjM1Ii8+CjxwYXRoIGQ9Ik0yMSAxN0g3VjZIMjFWMTdaIiBmaWxsPSIjRkZBNTAwIi8+CjxjaXJjbGUgY3g9IjkiIGN5PSIxOSIgcj0iMiIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSIxOSIgY3k9IjE5IiByPSIyIiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0xMCA4SDE4VjEwSDEwVjhaIiBmaWxsPSIjRkZGRkZGIi8+CjxwYXRoIGQ9Ik0xMSA5SDE3VjEzSDExVjlaIiBmaWxsPSIjRTZGRkZGIi8+Cjwvc3ZnPg==',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
+  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Truck body -->
+      <rect x="10" y="18" width="12" height="6" rx="1" fill="#9CA3AF"/>
+      <rect x="7" y="19" width="4" height="5" rx="1" fill="#6B7280"/>
+
+      <!-- Truck windows -->
+      <rect x="11" y="19" width="9" height="2" rx="0.5" fill="#F3F4F6"/>
+      <rect x="8" y="20" width="2" height="1.5" rx="0.2" fill="#F3F4F6"/>
+
+      <!-- Wheels -->
+      <circle cx="9" cy="26" r="1.8" fill="#374151"/>
+      <circle cx="20" cy="26" r="1.8" fill="#374151"/>
+
+      <!-- Ice cream cone on top -->
+      <path d="M16 10 L14 14 L18 14 Z" fill="#D1D5DB"/>
+      <circle cx="16" cy="10" r="2.5" fill="#E5E7EB"/>
+      <circle cx="15" cy="9" r="1" fill="#F3F4F6" opacity="0.8"/>
+
+      <!-- Offline indicator -->
+      <circle cx="24" cy="12" r="3" fill="#EF4444" opacity="0.9"/>
+      <path d="M22.5 12 L25.5 12" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  `),
+  iconSize: [34, 34],
+  iconAnchor: [17, 32],
   popupAnchor: [0, -32],
 });
 
-// Custom mobile live truck icon (pulsing green)
+// Custom mobile live truck icon (truck with motion lines)
 const mobileLiveTruckIcon = new L.Icon({
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTcgMTdIM1Y2SDdWMTdaIiBmaWxsPSIjMTBCOTgxIi8+CjxwYXRoIGQ9Ik0yMSAxN0g3VjZIMjFWMTdaIiBmaWxsPSIjMDZCNkQ0Ii8+CjxjaXJjbGUgY3g9IjkiIGN5PSIxOSIgcj0iMiIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSIxOSIgY3k9IjE5IiByPSIyIiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0xMCA4SDE4VjEwSDEwVjhaIiBmaWxsPSIjRkZGRkZGIi8+CjxwYXRoIGQ9Ik0xMSA5SDE3VjEzSDExVjlaIiBmaWxsPSIjRTZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iNCIgcj0iMyIgZmlsbD0iIzEwQjk4MSIvPgo8cGF0aCBkPSJNMTAuNSAyLjVMMTMuNSA1LjVMMTAuNSA4LjVaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPg==',
-  iconSize: [36, 36],
-  iconAnchor: [18, 36],
-  popupAnchor: [0, -36],
+  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+    <svg width="48" height="32" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Motion lines behind truck -->
+      <g opacity="0.8">
+        <path d="M2 14h6" stroke="#10B981" stroke-width="2" stroke-linecap="round"/>
+        <path d="M1 17h4" stroke="#10B981" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 20h7" stroke="#10B981" stroke-width="2" stroke-linecap="round"/>
+        <path d="M0 23h5" stroke="#10B981" stroke-width="2" stroke-linecap="round"/>
+      </g>
+
+      <!-- Truck body -->
+      <rect x="16" y="16" width="16" height="8" rx="1" fill="#10B981"/>
+      <rect x="12" y="18" width="6" height="6" rx="1" fill="#059669"/>
+
+      <!-- Truck windows -->
+      <rect x="18" y="18" width="12" height="3" rx="0.5" fill="#FFFFFF"/>
+      <rect x="13" y="19" width="4" height="2" rx="0.3" fill="#FFFFFF"/>
+
+      <!-- Wheels -->
+      <circle cx="15" cy="26" r="2" fill="#374151"/>
+      <circle cx="29" cy="26" r="2" fill="#374151"/>
+      <circle cx="15" cy="26" r="1.2" fill="#4B5563"/>
+      <circle cx="29" cy="26" r="1.2" fill="#4B5563"/>
+
+      <!-- Ice cream cone on top -->
+      <path d="M24 8 L22 12 L26 12 Z" fill="#FFFFFF"/>
+      <circle cx="24" cy="8" r="2.5" fill="#FFFFFF"/>
+
+      <!-- Direction arrow -->
+      <path d="M36 20 L42 20 L40 18 M42 20 L40 22" stroke="#059669" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  `),
+  iconSize: [50, 34],
+  iconAnchor: [25, 32],
+  popupAnchor: [0, -32],
 });
 
-// Custom static live truck icon (pulsing blue)
+// Custom static live truck icon (parked truck with pin)
 const staticLiveTruckIcon = new L.Icon({
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTcgMTdIM1Y2SDdWMTdaIiBmaWxsPSIjMzMzM0Y3Ii8+CjxwYXRoIGQ9Ik0yMSAxN0g3VjZIMjFWMTdaIiBmaWxsPSIjNjM2NkY3Ii8+CjxjaXJjbGUgY3g9IjkiIGN5PSIxOSIgcj0iMiIgZmlsbD0iIzMzMzMzMyIvPgo8Y2lyY2xlIGN4PSIxOSIgY3k9IjE5IiByPSIyIiBmaWxsPSIjMzMzMzMzIi8+CjxwYXRoIGQ9Ik0xMCA4SDE4VjEwSDEwVjhaIiBmaWxsPSIjRkZGRkZGIi8+CjxwYXRoIGQ9Ik0xMSA5SDE3VjEzSDExVjlaIiBmaWxsPSIjRTZGRkZGIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iNCIgcj0iMyIgZmlsbD0iIzMzMzNGNyIvPgo8cGF0aCBkPSJNMTAgMkgxNFY2SDEwVjJaIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPg==',
-  iconSize: [36, 36],
-  iconAnchor: [18, 36],
-  popupAnchor: [0, -36],
+  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+    <svg width="32" height="36" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Location pin -->
+      <path d="M16 2 C19.5 2 22 4.5 22 8 C22 12 16 18 16 18 S10 12 10 8 C10 4.5 12.5 2 16 2 Z" fill="#3B82F6" stroke="#1D4ED8" stroke-width="1"/>
+      <circle cx="16" cy="8" r="2" fill="#FFFFFF"/>
+
+      <!-- Truck body -->
+      <rect x="10" y="20" width="12" height="6" rx="1" fill="#3B82F6"/>
+      <rect x="7" y="21" width="4" height="5" rx="1" fill="#1D4ED8"/>
+
+      <!-- Truck windows -->
+      <rect x="11" y="21" width="9" height="2" rx="0.5" fill="#FFFFFF"/>
+      <rect x="8" y="22" width="2" height="1.5" rx="0.2" fill="#FFFFFF"/>
+
+      <!-- Wheels -->
+      <circle cx="9" cy="28" r="1.8" fill="#374151"/>
+      <circle cx="20" cy="28" r="1.8" fill="#374151"/>
+      <circle cx="9" cy="28" r="1" fill="#6B7280"/>
+      <circle cx="20" cy="28" r="1" fill="#6B7280"/>
+
+      <!-- Ice cream cone on top -->
+      <path d="M16 14 L14.5 17 L17.5 17 Z" fill="#FFFFFF"/>
+      <circle cx="16" cy="14" r="1.5" fill="#FFFFFF"/>
+
+      <!-- Parking indicators -->
+      <rect x="6" y="30" width="3" height="0.5" rx="0.25" fill="#93C5FD" opacity="0.8"/>
+      <rect x="23" y="30" width="3" height="0.5" rx="0.25" fill="#93C5FD" opacity="0.8"/>
+    </svg>
+  `),
+  iconSize: [36, 40],
+  iconAnchor: [18, 35],
+  popupAnchor: [0, -35],
 });
 
 // User location icon
 const userLocationIcon = new L.Icon({
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOCIgZmlsbD0iIzNBODJGNiIvPgo8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI0IiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPg==',
+  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="8" fill="#F97316"/>
+      <circle cx="12" cy="12" r="4" fill="#FFFFFF"/>
+      <circle cx="12" cy="12" r="2" fill="#F97316"/>
+    </svg>
+  `),
   iconSize: [24, 24],
   iconAnchor: [12, 12],
   popupAnchor: [0, -12],

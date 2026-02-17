@@ -103,7 +103,7 @@ export default function LiveBroadcastingScreen({
 
   const getBroadcastModeInfo = (mode: 'mobile' | 'static') => {
     return mode === 'mobile' ? {
-      icon: Move,
+      icon: Truck,
       title: 'Mobile Broadcasting',
       description: 'Broadcasting while moving - customers can see your real-time location as you drive',
       color: 'green',
@@ -178,7 +178,7 @@ export default function LiveBroadcastingScreen({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {broadcastingTruck?.broadcastMode === 'mobile' ? (
-                    <Move className="w-5 h-5 animate-pulse" />
+                    <Truck className="w-5 h-5 animate-pulse" />
                   ) : (
                     <Pin className="w-5 h-5 animate-pulse" />
                   )}
@@ -234,7 +234,7 @@ export default function LiveBroadcastingScreen({
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                       selectedMode === 'mobile' ? 'bg-green-500' : 'bg-gray-200'
                     }`}>
-                      <Move className={`w-6 h-6 ${selectedMode === 'mobile' ? 'text-white' : 'text-gray-500'}`} />
+                      <Truck className={`w-6 h-6 ${selectedMode === 'mobile' ? 'text-white' : 'text-gray-500'}`} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
@@ -256,8 +256,8 @@ export default function LiveBroadcastingScreen({
                           Route tracking
                         </div>
                         <div className="flex items-center text-xs text-gray-500">
-                          <Users className="w-3 h-3 mr-1" />
-                          Moving visibility
+                          <Truck className="w-3 h-3 mr-1" />
+                          On-the-go service
                         </div>
                       </div>
                     </div>
@@ -319,7 +319,11 @@ export default function LiveBroadcastingScreen({
               }`}
               disabled={!selectedTruckId}
             >
-              <Radio className="w-6 h-6 mr-2" />
+              {selectedMode === 'mobile' ? (
+                <Truck className="w-6 h-6 mr-2" />
+              ) : (
+                <Radio className="w-6 h-6 mr-2" />
+              )}
               Start {selectedMode === 'mobile' ? 'Mobile' : 'Static'} Broadcasting
             </Button>
           </>
@@ -334,7 +338,7 @@ export default function LiveBroadcastingScreen({
                   broadcastingTruck?.broadcastMode === 'mobile' ? 'bg-green-500' : 'bg-blue-500'
                 }`}>
                   {broadcastingTruck?.broadcastMode === 'mobile' ? (
-                    <Move className="w-10 h-10 text-white animate-pulse" />
+                    <Truck className="w-10 h-10 text-white animate-pulse" />
                   ) : (
                     <Pin className="w-10 h-10 text-white animate-pulse" />
                   )}
