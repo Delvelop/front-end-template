@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Clock, CheckCircle, XCircle, AlertCircle, MapPin, List, User } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, XCircle, AlertCircle, MapPin, List, User, Heart } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Request } from '../../App';
 
@@ -147,6 +147,13 @@ export default function RequestHistoryScreen({
           <button className="flex flex-col items-center text-orange-500">
             <List className="w-6 h-6 mb-1" />
             <span className="text-xs font-medium">Requests</span>
+          </button>
+          <button
+            onClick={() => onNavigate('favorites')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <Heart className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Favorites</span>
           </button>
           <button
             onClick={() => onNavigate('user-profile')}

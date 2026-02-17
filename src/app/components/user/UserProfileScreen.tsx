@@ -46,13 +46,8 @@ export default function UserProfileScreen({
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [showPrivacySettings, setShowPrivacySettings] = useState(false);
-  const [showFavorites, setShowFavorites] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [showUnfavoriteDialog, setShowUnfavoriteDialog] = useState(false);
-  const [truckToUnfavorite, setTruckToUnfavorite] = useState<IceCreamTruck | null>(null);
-
-  const favoriteTrucks = trucks.filter(truck => user?.favoriteTrucks.includes(truck.id));
 
   const handleNotificationChange = (key: keyof User['notificationSettings'], value: boolean) => {
     if (user) {
@@ -71,24 +66,6 @@ export default function UserProfileScreen({
     return success;
   };
 
-  const handleUnfavoriteClick = (truck: IceCreamTruck) => {
-    setTruckToUnfavorite(truck);
-    setShowUnfavoriteDialog(true);
-  };
-
-  const handleConfirmUnfavorite = () => {
-    if (truckToUnfavorite) {
-      onToggleFavorite(truckToUnfavorite.id);
-      setShowUnfavoriteDialog(false);
-      setTruckToUnfavorite(null);
-      toast.success(`${truckToUnfavorite.name} removed from favorites`);
-    }
-  };
-
-  const handleCancelUnfavorite = () => {
-    setShowUnfavoriteDialog(false);
-    setTruckToUnfavorite(null);
-  };
 
   const handleDeleteAccount = () => {
     if (!deletePassword) {
@@ -153,79 +130,6 @@ export default function UserProfileScreen({
 
         {/* Settings */}
         <div className="mb-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Favorites</h2>
-          <div className="mb-6">
-            <div className="w-full bg-gray-50 rounded-lg">
-              <button
-                className="w-full flex items-center justify-between p-4 hover:bg-gray-100 rounded-lg"
-                onClick={() => setShowFavorites(!showFavorites)}
-              >
-                <div className="flex items-center">
-                  <Heart className="w-5 h-5 text-red-500 mr-3" />
-                  <span className="font-medium text-gray-900">
-                    Favorite Trucks ({favoriteTrucks.length})
-                  </span>
-                </div>
-                {showFavorites ? (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
-                )}
-              </button>
-
-              {showFavorites && (
-                <div className="px-4 pb-4 border-t border-gray-200">
-                  {favoriteTrucks.length === 0 ? (
-                    <div className="text-center py-6">
-                      <Heart className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                      <p className="text-gray-500 mb-1">No favorite trucks yet</p>
-                      <p className="text-xs text-gray-400">
-                        Tap the heart icon on truck details to add favorites
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3 mt-3">
-                      {favoriteTrucks.map(truck => (
-                        <div
-                          key={truck.id}
-                          className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-                          onClick={() => onSelectTruck(truck)}
-                        >
-                          <div className="w-12 h-12 rounded-lg overflow-hidden mr-3 flex-shrink-0">
-                            <ImageWithFallback
-                              src={truckImages[truck.photoUrl]}
-                              alt={truck.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-gray-900 truncate">{truck.name}</h3>
-                            <div className="flex items-center">
-                              <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 mr-1" />
-                              <span className="text-xs text-gray-600">{truck.rating}</span>
-                              {truck.status === 'live' && (
-                                <Badge className="ml-2 bg-green-500 text-xs">Live</Badge>
-                              )}
-                            </div>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUnfavoriteClick(truck);
-                            }}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg flex-shrink-0"
-                          >
-                            <Heart className="w-4 h-4 fill-current" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
           <h2 className="text-lg font-bold text-gray-900 mb-4">Settings</h2>
           <div className="space-y-3">
             <div className="w-full bg-gray-50 rounded-lg">
@@ -416,6 +320,13 @@ export default function UserProfileScreen({
             <List className="w-6 h-6 mb-1" />
             <span className="text-xs font-medium">Requests</span>
           </button>
+          <button
+            onClick={() => onNavigate('favorites')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <Heart className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Favorites</span>
+          </button>
           <button className="flex flex-col items-center text-orange-500">
             <UserIcon className="w-6 h-6 mb-1" />
             <span className="text-xs font-medium">Profile</span>
@@ -483,36 +394,6 @@ export default function UserProfileScreen({
         </DialogContent>
       </Dialog>
 
-      {/* Unfavorite Confirmation Dialog */}
-      <Dialog open={showUnfavoriteDialog} onOpenChange={setShowUnfavoriteDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Remove from Favorites</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="text-sm text-gray-600">
-              <p>
-                Are you sure you want to remove <strong>{truckToUnfavorite?.name}</strong> from your favorites?
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button
-                onClick={handleCancelUnfavorite}
-                variant="outline"
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleConfirmUnfavorite}
-                className="flex-1 bg-red-600 hover:bg-red-700"
-              >
-                Remove
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Report Modal */}
       <ReportModal

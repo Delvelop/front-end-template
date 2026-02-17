@@ -13,6 +13,7 @@ import HomeMapView from './components/user/HomeMapView';
 import TruckDetailsScreen from './components/user/TruckDetailsScreen';
 import UserProfileScreen from './components/user/UserProfileScreen';
 import RequestHistoryScreen from './components/user/RequestHistoryScreen';
+import FavoritesScreen from './components/user/FavoritesScreen';
 
 // Driver upgrade screens
 import DriverSignupLanding from './components/driver-upgrade/DriverSignupLanding';
@@ -555,6 +556,16 @@ export default function App() {
           <RequestHistoryScreen
             requests={requests.filter(r => r.userId === user?.id)}
             onNavigate={navigate}
+          />
+        );
+      case 'favorites':
+        return (
+          <FavoritesScreen
+            user={user}
+            trucks={iceCreamTrucks}
+            onNavigate={navigate}
+            onToggleFavorite={handleToggleFavorite}
+            onSelectTruck={(truck) => navigate('truck-details', { truck })}
           />
         );
 

@@ -290,6 +290,13 @@ export default function HomeMapView({
             <span className="text-xs font-medium">Requests</span>
           </button>
           <button
+            onClick={() => onNavigate('favorites')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <Heart className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Favorites</span>
+          </button>
+          <button
             onClick={() => onNavigate('user-profile')}
             className="flex flex-col items-center text-gray-400"
           >
