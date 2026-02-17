@@ -192,14 +192,15 @@ export default function App() {
       ownerId: 'driver3',
       flavorCategories: ['Gelato', 'Sorbet', 'Coffee'],
       description: 'Authentic Italian gelato and refreshing sorbets',
-      status: 'offline',
+      status: 'live-mobile',
       location: { lat: 37.7955, lng: -122.4058 }, // North Beach
       distance: '0.8 miles',
       rating: 4.9,
       reviewCount: 312,
       schedule: 'Tue-Sun: 12pm-8pm',
       contact: '(555) 345-6789',
-      photoUrl: 'ice-cream-truck-3'
+      photoUrl: 'ice-cream-truck-3',
+      broadcastMode: 'mobile'
     },
     {
       id: '4',
@@ -207,14 +208,15 @@ export default function App() {
       ownerId: 'driver4',
       flavorCategories: ['Rolled Ice Cream', 'Bubble Tea', 'Frozen Yogurt'],
       description: 'Trendy rolled ice cream and frozen yogurt creations',
-      status: 'offline',
+      status: 'live-mobile',
       location: { lat: 37.7599, lng: -122.4148 }, // Castro District
       distance: '1.2 miles',
       rating: 4.7,
       reviewCount: 156,
       schedule: 'Mon-Sat: 11am-9pm',
       contact: '(555) 456-7890',
-      photoUrl: 'ice-cream-truck-4'
+      photoUrl: 'ice-cream-truck-4',
+      broadcastMode: 'mobile'
     }
   ]);
 

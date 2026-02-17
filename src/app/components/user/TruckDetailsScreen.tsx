@@ -122,15 +122,15 @@ export default function TruckDetailsScreen({
         </button>
         <Badge
           className={`absolute top-4 right-4 ${
-            truck.status === 'live'
+            truck.status === 'live-mobile'
               ? 'bg-green-500'
-              : truck.status === 'static'
+              : truck.status === 'live-static'
               ? 'bg-blue-500'
               : 'bg-gray-500'
           }`}
         >
-          {truck.status === 'live' && <Radio className="w-3 h-3 mr-1 animate-pulse" />}
-          {truck.status === 'live' ? 'Live Now' : truck.status === 'static' ? 'Open' : 'Offline'}
+          {(truck.status === 'live-mobile' || truck.status === 'live-static') && <Radio className="w-3 h-3 mr-1 animate-pulse" />}
+          {truck.status === 'live-mobile' ? 'Live & Moving' : truck.status === 'live-static' ? 'Live & Parked' : 'Offline'}
         </Badge>
       </div>
 
@@ -266,14 +266,14 @@ export default function TruckDetailsScreen({
       </div>
 
       {/* Send Request Button (Fixed at bottom) */}
-      {truck.status === 'live' && (
+      {(truck.status === 'live-mobile' || truck.status === 'live-static') && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
           <Button
             onClick={() => setShowRequestModal(true)}
             className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-lg"
           >
             <MessageSquare className="w-5 h-5 mr-2" />
-            Send Request to Truck
+            {truck.status === 'live-mobile' ? 'Request Moving Truck' : 'Request Parked Truck'}
           </Button>
         </div>
       )}
