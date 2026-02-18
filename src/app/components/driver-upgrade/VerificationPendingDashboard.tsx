@@ -132,23 +132,6 @@ export default function VerificationPendingDashboard({
               </div>
             </button>
 
-            <button
-              onClick={() => onNavigate('truck-requests')}
-              className="w-full bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow text-left"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <MessageSquare className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900">View Requests</h3>
-                    <p className="text-sm text-gray-600">See customer requests</p>
-                  </div>
-                </div>
-                <Badge className="bg-green-500">Available</Badge>
-              </div>
-            </button>
           </div>
         </div>
 
@@ -156,6 +139,21 @@ export default function VerificationPendingDashboard({
         <div className="mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4">Coming After Verification</h2>
           <div className="space-y-3">
+            <div className="w-full bg-gray-100 border border-gray-200 rounded-lg p-4 opacity-60">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                    <MessageSquare className="w-6 h-6 text-gray-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-700">View Requests</h3>
+                    <p className="text-sm text-gray-600">See customer requests</p>
+                  </div>
+                </div>
+                <Badge className="bg-gray-400">Locked</Badge>
+              </div>
+            </div>
+
             <div className="w-full bg-gray-100 border border-gray-200 rounded-lg p-4 opacity-60">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">

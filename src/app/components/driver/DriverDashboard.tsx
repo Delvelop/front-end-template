@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Truck, Radio, MessageSquare, DollarSign, Plus, TrendingUp, CheckCircle, LayoutDashboard, User, PlayCircle, PauseCircle, Settings } from 'lucide-react';
+import { Truck, Radio, MessageSquare, Plus, TrendingUp, CheckCircle, LayoutDashboard, User, PlayCircle, PauseCircle, Settings, Clock, Users, Star, Timer } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -97,23 +97,13 @@ export default function DriverDashboard({
                 <span className="font-medium">Add Your First Truck</span>
               </Button>
             ) : (
-              <>
-                <Button
-                  onClick={() => onNavigate('live-broadcasting')}
-                  className="h-16 bg-green-500 hover:bg-green-600 flex flex-col items-center justify-center"
-                >
-                  <PlayCircle className="w-5 h-5 mb-1" />
-                  <span className="font-medium">Go Live</span>
-                </Button>
-                <Button
-                  onClick={() => onNavigate('my-trucks')}
-                  variant="outline"
-                  className="h-16 flex flex-col items-center justify-center border-orange-300 hover:bg-orange-50"
-                >
-                  <Settings className="w-5 h-5 mb-1 text-orange-600" />
-                  <span className="font-medium text-orange-600">Manage Trucks</span>
-                </Button>
-              </>
+              <Button
+                onClick={() => onNavigate('live-broadcasting')}
+                className="h-16 bg-green-500 hover:bg-green-600 flex flex-col items-center justify-center col-span-2"
+              >
+                <PlayCircle className="w-5 h-5 mb-1" />
+                <span className="font-medium">Go Live</span>
+              </Button>
             )}
           </div>
         </Card>
@@ -174,29 +164,55 @@ export default function DriverDashboard({
         )}
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <Card className="p-3 text-center">
             <div className="flex items-center justify-center mb-1">
-              <Truck className="w-4 h-4 text-orange-500" />
+              <Clock className="w-4 h-4 text-purple-500" />
             </div>
-            <p className="text-lg font-bold text-gray-900">{trucks.length}</p>
-            <p className="text-xs text-gray-600">Trucks</p>
+            <p className="text-lg font-bold text-gray-900">12h</p>
+            <p className="text-xs text-gray-600">Broadcast Hours</p>
           </Card>
 
           <Card className="p-3 text-center">
             <div className="flex items-center justify-center mb-1">
               <MessageSquare className="w-4 h-4 text-blue-500" />
             </div>
-            <p className="text-lg font-bold text-gray-900">{requests.length}</p>
-            <p className="text-xs text-gray-600">Requests</p>
+            <p className="text-lg font-bold text-gray-900">24</p>
+            <p className="text-xs text-gray-600">Requests Last Week</p>
           </Card>
 
           <Card className="p-3 text-center">
             <div className="flex items-center justify-center mb-1">
-              <DollarSign className="w-4 h-4 text-green-500" />
+              <Users className="w-4 h-4 text-indigo-500" />
             </div>
-            <p className="text-lg font-bold text-gray-900">$890</p>
-            <p className="text-xs text-gray-600">This Week</p>
+            <p className="text-lg font-bold text-gray-900">156</p>
+            <p className="text-xs text-gray-600">Users Nearby</p>
+          </Card>
+
+          <Card className="p-3 text-center">
+            <div className="flex items-center justify-center mb-1">
+              <Star className="w-4 h-4 text-yellow-500" />
+            </div>
+            <p className="text-lg font-bold text-gray-900">4.8</p>
+            <p className="text-xs text-gray-600">Avg Rating</p>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="p-3 text-center">
+            <div className="flex items-center justify-center mb-1">
+              <Truck className="w-4 h-4 text-orange-500" />
+            </div>
+            <p className="text-lg font-bold text-gray-900">{trucks.length}</p>
+            <p className="text-xs text-gray-600">Total Trucks</p>
+          </Card>
+
+          <Card className="p-3 text-center">
+            <div className="flex items-center justify-center mb-1">
+              <Timer className="w-4 h-4 text-green-500" />
+            </div>
+            <p className="text-lg font-bold text-gray-900">2.3m</p>
+            <p className="text-xs text-gray-600">Avg Response</p>
           </Card>
         </div>
 
