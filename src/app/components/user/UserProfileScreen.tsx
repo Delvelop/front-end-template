@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, MapPin, List, User as UserIcon, Bell, Shield, LogOut, Truck, Trash2, ChevronDown, ChevronRight, Eye, EyeOff, Lock, UserX, Heart, Star, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, MapPin, User as UserIcon, Bell, Shield, LogOut, Truck, Trash2, ChevronDown, ChevronRight, Lock, UserX, Heart, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
@@ -112,21 +112,6 @@ export default function UserProfileScreen({
 
         <Separator className="mb-8" />
 
-        {/* My Activity */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">My Activity</h2>
-          <div className="space-y-3">
-            <button
-              onClick={() => onNavigate('request-history')}
-              className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
-            >
-              <span className="font-medium text-gray-900">Request History</span>
-              <span className="text-gray-400">→</span>
-            </button>
-          </div>
-        </div>
-
-        <Separator className="mb-8" />
 
         {/* Settings */}
         <div className="mb-8">
@@ -214,23 +199,6 @@ export default function UserProfileScreen({
 
               {showPrivacySettings && (
                 <div className="px-4 pb-4 border-t border-gray-200 space-y-2">
-                  {/* Location Privacy */}
-                  <button className="w-full flex items-center p-3 hover:bg-gray-100 rounded-lg">
-                    <MapPin className="w-4 h-4 text-gray-600 mr-3" />
-                    <div className="flex-1 text-left">
-                      <span className="text-sm font-medium text-gray-900">Location Privacy</span>
-                      <p className="text-xs text-gray-500">Control who can see your location</p>
-                    </div>
-                  </button>
-
-                  {/* Profile Visibility */}
-                  <button className="w-full flex items-center p-3 hover:bg-gray-100 rounded-lg">
-                    <Eye className="w-4 h-4 text-gray-600 mr-3" />
-                    <div className="flex-1 text-left">
-                      <span className="text-sm font-medium text-gray-900">Profile Visibility</span>
-                      <p className="text-xs text-gray-500">Manage your profile visibility</p>
-                    </div>
-                  </button>
 
                   {/* Change Password */}
                   <button className="w-full flex items-center p-3 hover:bg-gray-100 rounded-lg">
@@ -312,13 +280,6 @@ export default function UserProfileScreen({
           >
             <MapPin className="w-6 h-6 mb-1" />
             <span className="text-xs font-medium">Map</span>
-          </button>
-          <button
-            onClick={() => onNavigate('request-history')}
-            className="flex flex-col items-center text-gray-400"
-          >
-            <List className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">Requests</span>
           </button>
           <button
             onClick={() => onNavigate('favorites')}

@@ -16,9 +16,10 @@ interface TruckDetailsScreenProps {
   user: User | null;
   reviews: Review[];
   onNavigate: (screen: string) => void;
-  onSendRequest: (message: string, shareLocation: boolean) => void;
+  onSendRequest: (message: string, shareLocation: boolean) => boolean;
   onToggleFavorite: (truckId: string) => void;
   onSubmitReview: (truckId: string, rating: 1 | 2 | 3 | 4 | 5, comment: string) => boolean;
+  hasAlreadyRequested: boolean;
 }
 
 const truckImages: { [key: string]: string } = {
@@ -35,7 +36,8 @@ export default function TruckDetailsScreen({
   onNavigate,
   onSendRequest,
   onToggleFavorite,
-  onSubmitReview
+  onSubmitReview,
+  hasAlreadyRequested
 }: TruckDetailsScreenProps) {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestMessage, setRequestMessage] = useState('');
@@ -49,16 +51,32 @@ export default function TruckDetailsScreen({
   const isFavorite = user?.favoriteTrucks.includes(truck.id) || false;
 
   const handleSendRequest = () => {
-    onSendRequest(requestMessage, shareLocation);
-    setShowRequestModal(false);
-    setRequestMessage('');
-    setShareLocation(true);
+    // Check if already requested
+    if (hasAlreadyRequested) {
+      toast.error('You have already requested this truck during this broadcasting session');
+      return;
+    }
 
-    // Show success confirmation
-    toast.success(`Request sent to ${truck.name}!`, {
-      description: "Your request has been successfully sent to the truck driver. You'll be notified when they respond.",
-      duration: 4000
-    });
+    // Validate message is required when location sharing is disabled
+    if (!shareLocation && !requestMessage.trim()) {
+      toast.error('Message is required when not sharing exact location');
+      return;
+    }
+
+    const success = onSendRequest(requestMessage, shareLocation);
+    if (success) {
+      setShowRequestModal(false);
+      setRequestMessage('');
+      setShareLocation(true);
+
+      // Show success confirmation
+      toast.success(`Request sent to ${truck.name}!`, {
+        description: "Your request has been successfully sent to the truck driver. You'll be notified when they respond.",
+        duration: 4000
+      });
+    } else {
+      toast.error('You have already requested this truck during this broadcasting session');
+    }
   };
 
 
@@ -241,13 +259,23 @@ export default function TruckDetailsScreen({
       {/* Send Request Button (Fixed at bottom) - Only for moving trucks */}
       {truck.status === 'live-mobile' && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-          <Button
-            onClick={() => setShowRequestModal(true)}
-            className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-lg"
-          >
-            <MessageSquare className="w-5 h-5 mr-2" />
-            Request Moving Truck
-          </Button>
+          {hasAlreadyRequested ? (
+            <Button
+              disabled
+              className="w-full h-14 bg-gray-400 cursor-not-allowed text-lg"
+            >
+              <MessageSquare className="w-5 h-5 mr-2" />
+              Already Requested
+            </Button>
+          ) : (
+            <Button
+              onClick={() => setShowRequestModal(true)}
+              className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-lg"
+            >
+              <MessageSquare className="w-5 h-5 mr-2" />
+              Request Moving Truck
+            </Button>
+          )}
         </div>
       )}
 
@@ -263,15 +291,28 @@ export default function TruckDetailsScreen({
 
           <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="message">Message (Optional)</Label>
+              <Label htmlFor="message">
+                Message {!shareLocation && <span className="text-red-500">*</span>}
+                {shareLocation && <span className="text-gray-500">(Optional)</span>}
+              </Label>
               <Textarea
                 id="message"
-                placeholder="Let them know where you are or what you'd like..."
+                placeholder={
+                  shareLocation
+                    ? "Let them know where you are or what you'd like..."
+                    : "Please describe your location or what you'd like..."
+                }
                 value={requestMessage}
                 onChange={(e) => setRequestMessage(e.target.value)}
                 className="mt-1.5"
                 rows={4}
+                required={!shareLocation}
               />
+              {!shareLocation && (
+                <p className="text-xs text-red-500 mt-1">
+                  Message required when not sharing exact location
+                </p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">

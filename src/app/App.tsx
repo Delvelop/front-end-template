@@ -119,6 +119,7 @@ export default function App() {
   const [selectedTruckForEdit, setSelectedTruckForEdit] = useState<IceCreamTruck | null>(null);
   const [broadcastingTruckId, setBroadcastingTruckId] = useState<string | null>(null);
   const [reports, setReports] = useState<Report[]>([]);
+  const [userRequestedTrucks, setUserRequestedTrucks] = useState<Set<string>>(new Set()); // Track trucks user has requested in current session
   const [reviews, setReviews] = useState<Review[]>([
     {
       id: '1',
@@ -270,7 +271,7 @@ export default function App() {
       notificationSettings: {
         favoriteTruckBroadcast: true,
         newTrucksInArea: true,
-        generalUpdates: false
+        generalUpdates: true
       }
     };
     setUser(mockUser);
@@ -288,7 +289,7 @@ export default function App() {
       notificationSettings: {
         favoriteTruckBroadcast: true,
         newTrucksInArea: true,
-        generalUpdates: false
+        generalUpdates: true
       }
     };
     setUser(newUser);
@@ -347,6 +348,11 @@ export default function App() {
 
   const handleSendRequest = (message: string, shareLocation: boolean) => {
     if (user && selectedTruck) {
+      // Check if user has already requested this truck during the current session
+      if (userRequestedTrucks.has(selectedTruck.id)) {
+        return false; // Request blocked
+      }
+
       const newRequest: Request = {
         id: Math.random().toString(),
         userId: user.id,
@@ -358,9 +364,16 @@ export default function App() {
         timestamp: new Date(),
         location: shareLocation ? { lat: 37.7749, lng: -122.4194 } : undefined
       };
+
       setRequests([...requests, newRequest]);
+
+      // Add truck to requested trucks set
+      setUserRequestedTrucks(prev => new Set(prev).add(selectedTruck.id));
+
       navigate('home');
+      return true;
     }
+    return false;
   };
 
   const handleSaveTruck = (truckData: any) => {
@@ -436,6 +449,13 @@ export default function App() {
             : truck
         )
       );
+
+      // Clear the requested truck from tracking when it goes offline
+      setUserRequestedTrucks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(broadcastingTruckId);
+        return newSet;
+      });
     }
   };
 
@@ -555,6 +575,7 @@ export default function App() {
             onSendRequest={handleSendRequest}
             onToggleFavorite={handleToggleFavorite}
             onSubmitReview={handleSubmitReview}
+            hasAlreadyRequested={selectedTruck ? userRequestedTrucks.has(selectedTruck.id) : false}
           />
         );
       case 'user-profile':
