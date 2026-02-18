@@ -22,7 +22,7 @@ export default function PasswordResetScreen({ onNavigate }: PasswordResetScreenP
   const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword === confirmPassword) {
-      onNavigate('login');
+      onNavigate('welcome');
     }
   };
 
@@ -31,7 +31,7 @@ export default function PasswordResetScreen({ onNavigate }: PasswordResetScreenP
       <div className="min-h-screen bg-white">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4">
           <button
-            onClick={() => onNavigate('login')}
+            onClick={() => onNavigate('welcome')}
             className="flex items-center text-gray-700"
           >
             <ArrowLeft className="w-6 h-6" />
@@ -56,7 +56,7 @@ export default function PasswordResetScreen({ onNavigate }: PasswordResetScreenP
             Continue to Reset Password
           </Button>
           <Button
-            onClick={() => onNavigate('login')}
+            onClick={() => onNavigate('welcome')}
             variant="outline"
             className="w-full h-12 mt-4"
           >
@@ -72,7 +72,7 @@ export default function PasswordResetScreen({ onNavigate }: PasswordResetScreenP
       <div className="min-h-screen bg-white">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4">
           <button
-            onClick={() => onNavigate('login')}
+            onClick={() => onNavigate('welcome')}
             className="flex items-center text-gray-700"
           >
             <ArrowLeft className="w-6 h-6" />
@@ -128,7 +128,7 @@ export default function PasswordResetScreen({ onNavigate }: PasswordResetScreenP
     <div className="min-h-screen bg-white">
       <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4">
         <button
-          onClick={() => onNavigate('login')}
+          onClick={() => onNavigate('welcome')}
           className="flex items-center text-gray-700"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -169,7 +169,7 @@ export default function PasswordResetScreen({ onNavigate }: PasswordResetScreenP
             type="button"
             variant="outline"
             className="w-full h-12"
-            onClick={() => onNavigate('login')}
+            onClick={() => onNavigate('welcome')}
           >
             Back to Login
           </Button>

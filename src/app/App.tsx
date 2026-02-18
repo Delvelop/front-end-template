@@ -509,7 +509,7 @@ export default function App() {
     switch (currentScreen) {
       // Auth screens
       case 'welcome':
-        return <WelcomeScreen onNavigate={navigate} />;
+        return <WelcomeScreen onLogin={handleLogin} onNavigate={navigate} />;
       case 'signup':
         return <SignUpScreen onSignUp={handleSignUp} onNavigate={navigate} />;
       case 'login':
@@ -655,7 +655,7 @@ export default function App() {
         );
 
       default:
-        return <WelcomeScreen onNavigate={navigate} />;
+        return <WelcomeScreen onLogin={handleLogin} onNavigate={navigate} />;
     }
   };
 
