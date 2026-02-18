@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Clock, CheckCircle, XCircle, AlertCircle, MapPin, List, User, Heart } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Request } from '../../App';
 
 interface RequestHistoryScreenProps {
@@ -12,33 +13,7 @@ export default function RequestHistoryScreen({
   requests,
   onNavigate
 }: RequestHistoryScreenProps) {
-  const getStatusIcon = (status: Request['status']) => {
-    switch (status) {
-      case 'acknowledged':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'ignored':
-        return <XCircle className="w-5 h-5 text-red-500" />;
-      case 'expired':
-        return <AlertCircle className="w-5 h-5 text-gray-400" />;
-      default:
-        return <Clock className="w-5 h-5 text-orange-500" />;
-    }
-  };
-
-  const getStatusBadge = (status: Request['status']) => {
-    const variants = {
-      pending: 'bg-orange-100 text-orange-700',
-      acknowledged: 'bg-green-100 text-green-700',
-      ignored: 'bg-red-100 text-red-700',
-      expired: 'bg-gray-100 text-gray-700'
-    };
-
-    return (
-      <Badge className={variants[status]}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </Badge>
-    );
-  };
+  const [activeTab, setActiveTab] = useState('all');
 
   const formatTimestamp = (date: Date) => {
     const now = new Date();
@@ -52,86 +27,154 @@ export default function RequestHistoryScreen({
     return `${days}d ago`;
   };
 
+  const pendingRequests = requests.filter(r => r.status === 'pending');
+  const acknowledgedRequests = requests.filter(r => r.status === 'acknowledged');
+  const completedRequests = requests.filter(r => r.status === 'acknowledged' || r.status === 'ignored');
+
+  const RequestCard = ({ request }: { request: Request }) => (
+    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="font-bold text-orange-600">
+              {request.truckName.charAt(0)}
+            </span>
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900">{request.truckName}</h3>
+            <p className="text-sm text-gray-600">Request sent</p>
+            <p className="text-xs text-gray-500">{formatTimestamp(request.timestamp)}</p>
+          </div>
+        </div>
+        <Badge
+          className={
+            request.status === 'pending'
+              ? 'bg-orange-100 text-orange-700'
+              : request.status === 'acknowledged'
+              ? 'bg-green-100 text-green-700'
+              : request.status === 'ignored'
+              ? 'bg-red-100 text-red-700'
+              : 'bg-gray-100 text-gray-700'
+          }
+        >
+          {request.status}
+        </Badge>
+      </div>
+
+      {request.message && (
+        <div className="bg-gray-50 rounded-lg p-3 mb-3">
+          <p className="text-sm text-gray-700">{request.message}</p>
+        </div>
+      )}
+
+      <div className="flex items-center text-sm text-gray-500">
+        <MapPin className="w-4 h-4 mr-1" />
+        {request.location ? 'Location shared' : 'Location not shared'}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4">
-        <div className="flex items-center">
-          <button
-            onClick={() => onNavigate('home')}
-            className="mr-3"
-          >
-            <ArrowLeft className="w-6 h-6 text-gray-700" />
-          </button>
-          <h1 className="text-xl font-bold text-gray-900">Request History</h1>
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 z-10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <button
+              onClick={() => onNavigate('home')}
+              className="mr-3"
+            >
+              <ArrowLeft className="w-6 h-6 text-gray-700" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-900">My Requests</h1>
+          </div>
+          {pendingRequests.length > 0 && (
+            <Badge className="bg-orange-500">
+              {pendingRequests.length} Pending
+            </Badge>
+          )}
         </div>
       </div>
 
-      {/* Content */}
       <div className="px-6 py-6">
-        {requests.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <Clock className="w-10 h-10 text-gray-400" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">No Requests Yet</h2>
-            <p className="text-gray-600">
-              Your food truck requests will appear here
-            </p>
+        {/* Summary Stats */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="bg-orange-50 rounded-lg p-3 text-center">
+            <p className="text-2xl font-bold text-orange-600">{pendingRequests.length}</p>
+            <p className="text-xs text-orange-700">Pending</p>
           </div>
-        ) : (
-          <>
-            <div className="mb-6">
-              <p className="text-gray-600">
-                {requests.length} {requests.length === 1 ? 'request' : 'requests'} sent
-              </p>
-            </div>
+          <div className="bg-green-50 rounded-lg p-3 text-center">
+            <p className="text-2xl font-bold text-green-600">{acknowledgedRequests.length}</p>
+            <p className="text-xs text-green-700">Acknowledged</p>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-3 text-center">
+            <p className="text-2xl font-bold text-gray-600">{requests.length}</p>
+            <p className="text-xs text-gray-700">Total</p>
+          </div>
+        </div>
 
-            <div className="space-y-4">
-              {requests.map(request => (
-                <div
-                  key={request.id}
-                  className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-start gap-3">
-                      {getStatusIcon(request.status)}
-                      <div>
-                        <h3 className="font-bold text-gray-900 mb-1">
-                          {request.truckName}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {formatTimestamp(request.timestamp)}
-                        </p>
-                      </div>
-                    </div>
-                    {getStatusBadge(request.status)}
-                  </div>
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="all">
+              All ({requests.length})
+            </TabsTrigger>
+            <TabsTrigger value="pending">
+              Pending ({pendingRequests.length})
+            </TabsTrigger>
+            <TabsTrigger value="acknowledged">
+              Done ({acknowledgedRequests.length})
+            </TabsTrigger>
+          </TabsList>
 
-                  {request.message && (
-                    <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                      <p className="text-sm text-gray-700">{request.message}</p>
-                    </div>
-                  )}
+          <TabsContent value="all" className="space-y-4">
+            {requests.length === 0 ? (
+              <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+                <List className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">No Requests Yet</h3>
+                <p className="text-sm text-gray-600">
+                  Customer requests will appear here when you send them
+                </p>
+              </div>
+            ) : (
+              requests.map(request => (
+                <RequestCard key={request.id} request={request} />
+              ))
+            )}
+          </TabsContent>
 
-                  <div className="flex items-center text-sm text-gray-500">
-                    {request.location ? (
-                      <>
-                        <MapPin className="w-4 h-4 mr-1" />
-                        <span>Location shared</span>
-                      </>
-                    ) : (
-                      <>
-                        <MapPin className="w-4 h-4 mr-1 opacity-50" />
-                        <span>Location not shared</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+          <TabsContent value="pending" className="space-y-4">
+            {pendingRequests.length === 0 ? (
+              <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+                <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">No Pending Requests</h3>
+                <p className="text-sm text-gray-600">
+                  You're all caught up!
+                </p>
+              </div>
+            ) : (
+              pendingRequests.map(request => (
+                <RequestCard key={request.id} request={request} />
+              ))
+            )}
+          </TabsContent>
+
+          <TabsContent value="acknowledged" className="space-y-4">
+            {acknowledgedRequests.length === 0 ? (
+              <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+                <CheckCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">No Acknowledged Requests</h3>
+                <p className="text-sm text-gray-600">
+                  Acknowledged requests will appear here
+                </p>
+              </div>
+            ) : (
+              acknowledgedRequests.map(request => (
+                <RequestCard key={request.id} request={request} />
+              ))
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Bottom Navigation */}

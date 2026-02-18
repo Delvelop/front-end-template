@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Bell, CheckCircle, XCircle, Clock, MapPin, Filter, LayoutDashboard, Truck, MessageSquare, User } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Clock, MapPin, Filter, LayoutDashboard, Truck, MessageSquare, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
@@ -198,22 +198,6 @@ export default function TruckRequestsManagement({
             )}
           </TabsContent>
         </Tabs>
-
-        {/* Notification Settings */}
-        <div className="mt-8 bg-white border border-gray-200 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-orange-500" />
-              <div>
-                <h3 className="font-bold text-gray-900">Push Notifications</h3>
-                <p className="text-sm text-gray-600">Get notified of new requests</p>
-              </div>
-            </div>
-            <Button variant="outline" size="sm">
-              Settings
-            </Button>
-          </div>
-        </div>
       </div>
 
       {/* Bottom Navigation */}
