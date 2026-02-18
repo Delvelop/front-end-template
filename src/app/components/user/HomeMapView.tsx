@@ -185,10 +185,6 @@ export default function HomeMapView({
               <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
               <span className="text-xs text-gray-700">Live & Parked</span>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-              <span className="text-xs text-gray-700">Offline</span>
-            </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
               <span className="text-xs text-gray-700">Your Location</span>
