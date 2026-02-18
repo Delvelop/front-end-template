@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, Truck, Plus, MessageSquare, AlertCircle, CheckCircle, LayoutDashboard, User as UserIcon } from 'lucide-react';
+import { Clock, Truck, Plus, MessageSquare, AlertCircle, CheckCircle, LayoutDashboard, User as UserIcon, Radio } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { User } from '../../App';
@@ -191,11 +191,11 @@ export default function VerificationPendingDashboard({
             <span className="text-xs font-medium">Dashboard</span>
           </button>
           <button
-            onClick={() => onNavigate('my-trucks')}
+            onClick={() => onNavigate('live-broadcasting')}
             className="flex flex-col items-center text-gray-400"
           >
-            <Truck className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">My Trucks</span>
+            <Radio className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Live</span>
           </button>
           <button
             onClick={() => onNavigate('truck-requests')}

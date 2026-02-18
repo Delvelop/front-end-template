@@ -274,6 +274,7 @@ export default function DriverDashboard({
             </div>
           </Card>
         )}
+
       </div>
 
       {/* Bottom Navigation */}
@@ -284,11 +285,11 @@ export default function DriverDashboard({
             <span className="text-xs font-medium">Dashboard</span>
           </button>
           <button
-            onClick={() => onNavigate('my-trucks')}
+            onClick={() => onNavigate('live-broadcasting')}
             className="flex flex-col items-center text-gray-400"
           >
-            <Truck className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">My Trucks</span>
+            <Radio className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Live</span>
           </button>
           <button
             onClick={() => onNavigate('truck-requests')}

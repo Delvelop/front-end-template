@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Radio, MapPin, Users, BatteryWarning, Power, Navigation, StopCircle, Move, Pin, Truck, Map, Zap, Clock } from 'lucide-react';
+import { ArrowLeft, Radio, MapPin, Users, BatteryWarning, Power, Navigation, StopCircle, Move, Pin, Truck, Map, Zap, Clock, LayoutDashboard, MessageSquare, User } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
@@ -41,6 +41,9 @@ export default function LiveBroadcastingScreen({
   const [selectedTruckId, setSelectedTruckId] = useState<string | null>(null);
   const [selectedMode, setSelectedMode] = useState<'mobile' | 'static'>('mobile');
   const [broadcastDuration, setBroadcastDuration] = useState('00:00:00');
+  const [staticLocation, setStaticLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [staticDuration, setStaticDuration] = useState<number>(2); // hours
+  const [isPinDropMode, setIsPinDropMode] = useState(false);
 
   const isBroadcasting = !!broadcastingTruckId;
   const broadcastingTruck = isBroadcasting ? trucks.find(t => t.id === broadcastingTruckId) : null;
@@ -120,7 +123,7 @@ export default function LiveBroadcastingScreen({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-4 z-10">
         <div className="flex items-center justify-between">
@@ -136,12 +139,23 @@ export default function LiveBroadcastingScreen({
       </div>
 
       {/* Map View */}
-      <div className="relative h-[40vh] bg-gray-200">
+      <div className="relative h-[40vh] bg-gray-200" onClick={isPinDropMode ? (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        // Convert pixel coordinates to lat/lng (mock implementation)
+        const lat = 40.7128 + (y - rect.height/2) / 1000;
+        const lng = -74.0060 + (x - rect.width/2) / 1000;
+        setStaticLocation({lat, lng});
+        setIsPinDropMode(false);
+      } : undefined}>
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-500">
-              {isBroadcasting
+              {isPinDropMode
+                ? 'Tap to drop pin for static location'
+                : isBroadcasting
                 ? `${broadcastingTruck?.broadcastMode === 'mobile' ? 'Moving Location' : 'Fixed Location'}`
                 : 'Ready to Broadcast'
               }
@@ -164,6 +178,8 @@ export default function LiveBroadcastingScreen({
                   : 'bg-blue-500'
               }`}></div>
             </>
+          ) : staticLocation ? (
+            <div className="w-6 h-6 rounded-full border-4 border-white bg-blue-500 shadow-lg"></div>
           ) : (
             <div className="w-6 h-6 rounded-full border-4 border-white bg-gray-400 shadow-lg"></div>
           )}
@@ -309,6 +325,70 @@ export default function LiveBroadcastingScreen({
               </div>
             </Card>
 
+            {/* Static Broadcasting Configuration */}
+            {selectedMode === 'static' && (
+              <Card className="p-4 mb-6 bg-blue-50 border-blue-200">
+                <h3 className="font-bold text-gray-900 mb-4">Static Broadcasting Setup</h3>
+
+                {/* Pin Location */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Set Your Location
+                  </label>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setIsPinDropMode(true)}
+                      variant="outline"
+                      className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
+                    >
+                      <MapPin className="w-4 h-4 mr-2" />
+                      {staticLocation ? 'Change Location' : 'Drop Pin on Map'}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        // Use current location (mock)
+                        setStaticLocation({lat: 40.7128, lng: -74.0060});
+                      }}
+                      variant="outline"
+                      className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                    >
+                      Use Current Location
+                    </Button>
+                  </div>
+                  {staticLocation && (
+                    <p className="text-xs text-blue-600 mt-1">
+                      📍 Pin dropped at {staticLocation.lat.toFixed(4)}, {staticLocation.lng.toFixed(4)}
+                    </p>
+                  )}
+                </div>
+
+                {/* Duration Selection */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    How long will you broadcast?
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[1, 2, 4, 8].map(hours => (
+                      <button
+                        key={hours}
+                        onClick={() => setStaticDuration(hours)}
+                        className={`p-2 rounded-lg text-sm font-medium transition-colors ${
+                          staticDuration === hours
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white border border-blue-200 text-blue-700 hover:bg-blue-50'
+                        }`}
+                      >
+                        {hours}h
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    You can stop early or extend later
+                  </p>
+                </div>
+              </Card>
+            )}
+
             {/* Start Broadcasting Button */}
             <Button
               onClick={handleToggleBroadcast}
@@ -317,7 +397,7 @@ export default function LiveBroadcastingScreen({
                   ? 'bg-green-500 hover:bg-green-600'
                   : 'bg-blue-500 hover:bg-blue-600'
               }`}
-              disabled={!selectedTruckId}
+              disabled={!selectedTruckId || (selectedMode === 'static' && !staticLocation)}
             >
               {selectedMode === 'mobile' ? (
                 <Truck className="w-6 h-6 mr-2" />
@@ -479,6 +559,37 @@ export default function LiveBroadcastingScreen({
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div className="flex justify-around py-3">
+          <button
+            onClick={() => onNavigate('driver-dashboard')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <LayoutDashboard className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Dashboard</span>
+          </button>
+          <button className="flex flex-col items-center text-orange-500">
+            <Radio className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Live</span>
+          </button>
+          <button
+            onClick={() => onNavigate('truck-requests')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <MessageSquare className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Requests</span>
+          </button>
+          <button
+            onClick={() => onNavigate('driver-profile')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <User className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Profile</span>
+          </button>
         </div>
       </div>
     </div>

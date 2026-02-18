@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, CheckCircle, Truck, TrendingUp, Bell, Shield, LogOut, LayoutDashboard, MessageSquare, User as UserIcon } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Truck, TrendingUp, Bell, Shield, LogOut, LayoutDashboard, MessageSquare, User as UserIcon, Radio } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
@@ -195,11 +195,11 @@ export default function DriverProfileScreen({
             <span className="text-xs font-medium">Dashboard</span>
           </button>
           <button
-            onClick={() => onNavigate('my-trucks')}
+            onClick={() => onNavigate('live-broadcasting')}
             className="flex flex-col items-center text-gray-400"
           >
-            <Truck className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">My Trucks</span>
+            <Radio className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Live</span>
           </button>
           <button
             onClick={() => onNavigate('truck-requests')}

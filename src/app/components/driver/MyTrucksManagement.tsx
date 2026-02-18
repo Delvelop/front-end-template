@@ -180,9 +180,12 @@ export default function MyTrucksManagement({
             <LayoutDashboard className="w-6 h-6 mb-1" />
             <span className="text-xs font-medium">Dashboard</span>
           </button>
-          <button className="flex flex-col items-center text-orange-500">
-            <Truck className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">My Trucks</span>
+          <button
+            onClick={() => onNavigate('live-broadcasting')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <Radio className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Live</span>
           </button>
           <button
             onClick={() => onNavigate('truck-requests')}

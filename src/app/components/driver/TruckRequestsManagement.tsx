@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, CheckCircle, XCircle, Clock, MapPin, Filter, LayoutDashboard, Truck, MessageSquare, User } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Clock, MapPin, Filter, LayoutDashboard, Truck, MessageSquare, User, Radio } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
@@ -211,11 +211,11 @@ export default function TruckRequestsManagement({
             <span className="text-xs font-medium">Dashboard</span>
           </button>
           <button
-            onClick={() => onNavigate('my-trucks')}
+            onClick={() => onNavigate('live-broadcasting')}
             className="flex flex-col items-center text-gray-400"
           >
-            <Truck className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">My Trucks</span>
+            <Radio className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Live</span>
           </button>
           <button className="flex flex-col items-center text-orange-500">
             <MessageSquare className="w-6 h-6 mb-1" />
