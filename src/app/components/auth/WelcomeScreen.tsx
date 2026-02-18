@@ -88,13 +88,12 @@ export default function WelcomeScreen({ onLogin, onNavigate }: WelcomeScreenProp
           </Button>
 
           {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-orange-300"></div>
+          <div className="relative flex items-center">
+            <div className="flex-1 border-t border-orange-300"></div>
+            <div className="px-3">
+              <span className="text-white text-sm">Or continue with</span>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-3 text-white">Or continue with</span>
-            </div>
+            <div className="flex-1 border-t border-orange-300"></div>
           </div>
 
           {/* Google OAuth */}

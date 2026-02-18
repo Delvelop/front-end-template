@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, MapPin, User as UserIcon, Bell, Shield, LogOut, Truck, Trash2, ChevronDown, ChevronRight, Lock, UserX, Heart, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, MapPin, List, User as UserIcon, Bell, Shield, LogOut, Truck, Trash2, ChevronDown, ChevronRight, Lock, UserX, Heart, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
@@ -280,6 +280,13 @@ export default function UserProfileScreen({
           >
             <MapPin className="w-6 h-6 mb-1" />
             <span className="text-xs font-medium">Map</span>
+          </button>
+          <button
+            onClick={() => onNavigate('request-history')}
+            className="flex flex-col items-center text-gray-400"
+          >
+            <List className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Requests</span>
           </button>
           <button
             onClick={() => onNavigate('favorites')}
