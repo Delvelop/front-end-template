@@ -64,9 +64,9 @@ export interface IceCreamTruck {
   distance?: string;
   rating: number;
   reviewCount: number;
-  schedule: string;
   contact: string;
   photoUrl: string;
+  lastOnline?: Date;
   broadcastMode?: 'mobile' | 'static'; // Additional field to track current broadcast mode
 }
 
@@ -165,9 +165,9 @@ export default function App() {
       distance: '0.3 miles',
       rating: 4.8,
       reviewCount: 248,
-      schedule: 'Mon-Fri: 11am-9pm',
       contact: '(555) 123-4567',
       photoUrl: 'ice-cream-truck-1',
+      lastOnline: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
       broadcastMode: 'mobile'
     },
     {
@@ -181,9 +181,9 @@ export default function App() {
       distance: '0.5 miles',
       rating: 4.6,
       reviewCount: 189,
-      schedule: 'Daily: 10am-10pm',
       contact: '(555) 234-5678',
       photoUrl: 'ice-cream-truck-2',
+      lastOnline: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
       broadcastMode: 'static'
     },
     {
@@ -197,9 +197,9 @@ export default function App() {
       distance: '0.8 miles',
       rating: 4.9,
       reviewCount: 312,
-      schedule: 'Tue-Sun: 12pm-8pm',
       contact: '(555) 345-6789',
       photoUrl: 'ice-cream-truck-3',
+      lastOnline: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
       broadcastMode: 'mobile'
     },
     {
@@ -213,10 +213,25 @@ export default function App() {
       distance: '1.2 miles',
       rating: 4.7,
       reviewCount: 156,
-      schedule: 'Mon-Sat: 11am-9pm',
       contact: '(555) 456-7890',
       photoUrl: 'ice-cream-truck-4',
+      lastOnline: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
       broadcastMode: 'mobile'
+    },
+    {
+      id: '5',
+      name: 'Vintage Scoops',
+      ownerId: 'driver5',
+      flavorCategories: ['Vintage', 'Classic', 'Sundaes'],
+      description: 'Old-fashioned ice cream truck with nostalgic flavors and traditional sundaes',
+      status: 'offline',
+      location: { lat: 37.7849, lng: -122.4194 }, // Union Square area
+      distance: '0.4 miles',
+      rating: 4.5,
+      reviewCount: 127,
+      contact: '(555) 567-8901',
+      photoUrl: 'ice-cream-truck-1',
+      lastOnline: new Date(Date.now() - 1000 * 60 * 60 * 4) // 4 hours ago
     }
   ]);
 
@@ -251,7 +266,7 @@ export default function App() {
       firstName: 'John',
       homeCity: 'San Francisco',
       role: 'user',
-      favoriteTrucks: [],
+      favoriteTrucks: ['5'], // Vintage Scoops (offline truck)
       notificationSettings: {
         favoriteTruckBroadcast: true,
         newTrucksInArea: true,
@@ -367,8 +382,8 @@ export default function App() {
         status: 'offline',
         location: { lat: 37.7749, lng: -122.4194 }, // Default location
         rating: 0,
-        schedule: truckData.schedule,
         contact: truckData.contact,
+        lastOnline: new Date(),
         photoUrl: 'ice-cream-truck-1' // Default photo
       };
       setIceCreamTrucks([...iceCreamTrucks, newTruck]);
@@ -539,7 +554,6 @@ export default function App() {
             onNavigate={navigate}
             onSendRequest={handleSendRequest}
             onToggleFavorite={handleToggleFavorite}
-            onSubmitReport={handleSubmitReport}
             onSubmitReview={handleSubmitReview}
           />
         );

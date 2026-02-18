@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, MapPin, Clock, Phone, Star, Radio, MessageSquare, Heart, Flag, CheckCircle } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Phone, Star, Radio, MessageSquare, Heart, CheckCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { IceCreamTruck, User, Report, Review } from '../../App';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { toast } from 'sonner';
-import ReportModal from '../common/ReportModal';
 import ReviewModal from '../common/ReviewModal';
 
 interface TruckDetailsScreenProps {
@@ -19,7 +18,6 @@ interface TruckDetailsScreenProps {
   onNavigate: (screen: string) => void;
   onSendRequest: (message: string, shareLocation: boolean) => void;
   onToggleFavorite: (truckId: string) => void;
-  onSubmitReport: (reportData: Omit<Report, 'id' | 'reporterId' | 'reporterName' | 'timestamp' | 'status'>) => boolean;
   onSubmitReview: (truckId: string, rating: 1 | 2 | 3 | 4 | 5, comment: string) => boolean;
 }
 
@@ -37,13 +35,11 @@ export default function TruckDetailsScreen({
   onNavigate,
   onSendRequest,
   onToggleFavorite,
-  onSubmitReport,
   onSubmitReview
 }: TruckDetailsScreenProps) {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestMessage, setRequestMessage] = useState('');
   const [shareLocation, setShareLocation] = useState(true);
-  const [showReportModal, setShowReportModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
 
   if (!truck) {
@@ -65,13 +61,6 @@ export default function TruckDetailsScreen({
     });
   };
 
-  const handleReportSubmit = (reportData: Omit<Report, 'id' | 'reporterId' | 'reporterName' | 'timestamp' | 'status'>) => {
-    const success = onSubmitReport(reportData);
-    if (success) {
-      toast.success('Report submitted successfully! We\'ll review it within 24 hours.');
-    }
-    return success;
-  };
 
   const handleReviewSubmit = (rating: 1 | 2 | 3 | 4 | 5, comment: string) => {
     const success = onSubmitReview(truck.id, rating, comment);
@@ -114,12 +103,6 @@ export default function TruckDetailsScreen({
         >
           <Heart className={`w-6 h-6 ${isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} />
         </button>
-        <button
-          onClick={() => setShowReportModal(true)}
-          className="absolute top-4 left-28 p-2 bg-white rounded-full shadow-lg"
-        >
-          <Flag className="w-6 h-6 text-gray-400 hover:text-red-500" />
-        </button>
         <Badge
           className={`absolute top-4 right-4 ${
             truck.status === 'live-mobile'
@@ -140,18 +123,6 @@ export default function TruckDetailsScreen({
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{truck.name}</h1>
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex flex-wrap gap-2">
-              {truck.flavorCategories.slice(0, 3).map((category, index) => (
-                <Badge key={index} variant="outline" className="text-sm px-2 py-1">
-                  {category}
-                </Badge>
-              ))}
-              {truck.flavorCategories.length > 3 && (
-                <Badge variant="outline" className="text-sm px-2 py-1">
-                  +{truck.flavorCategories.length - 3} more
-                </Badge>
-              )}
-            </div>
             <div className="flex items-center">
               <Star className="w-5 h-5 text-yellow-500 fill-yellow-500 mr-1" />
               <span className="text-lg font-semibold">{truck.rating}</span>
@@ -170,14 +141,16 @@ export default function TruckDetailsScreen({
           <p className="text-gray-700 leading-relaxed">{truck.description}</p>
         </div>
 
-        {/* Schedule */}
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-3">Hours</h2>
-          <div className="flex items-center text-gray-700">
-            <Clock className="w-5 h-5 mr-3 text-orange-500" />
-            <span>{truck.schedule}</span>
+        {/* Last Online - Only show for offline trucks */}
+        {truck.status === 'offline' && (
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-3">Last Online</h2>
+            <div className="flex items-center text-gray-700">
+              <Clock className="w-5 h-5 mr-3 text-orange-500" />
+              <span>{truck.lastOnline ? formatTimestamp(truck.lastOnline) : 'Unknown'}</span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Contact */}
         <div className="mb-6">
@@ -265,15 +238,15 @@ export default function TruckDetailsScreen({
         </div>
       </div>
 
-      {/* Send Request Button (Fixed at bottom) */}
-      {(truck.status === 'live-mobile' || truck.status === 'live-static') && (
+      {/* Send Request Button (Fixed at bottom) - Only for moving trucks */}
+      {truck.status === 'live-mobile' && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
           <Button
             onClick={() => setShowRequestModal(true)}
             className="w-full h-14 bg-orange-500 hover:bg-orange-600 text-lg"
           >
             <MessageSquare className="w-5 h-5 mr-2" />
-            {truck.status === 'live-mobile' ? 'Request Moving Truck' : 'Request Parked Truck'}
+            Request Moving Truck
           </Button>
         </div>
       )}
@@ -332,15 +305,6 @@ export default function TruckDetailsScreen({
         </DialogContent>
       </Dialog>
 
-      {/* Report Modal */}
-      <ReportModal
-        isOpen={showReportModal}
-        onClose={() => setShowReportModal(false)}
-        onSubmit={handleReportSubmit}
-        targetType="truck"
-        targetId={truck.id}
-        targetName={truck.name}
-      />
 
       {/* Review Modal */}
       <ReviewModal

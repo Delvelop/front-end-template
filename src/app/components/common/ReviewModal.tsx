@@ -122,19 +122,6 @@ export default function ReviewModal({
             </p>
           </div>
 
-          {/* Rating Guidelines */}
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">
-              Rating Guidelines:
-            </h4>
-            <div className="space-y-1 text-xs text-gray-600">
-              <div>⭐ Poor - Major issues with service or product</div>
-              <div>⭐⭐ Fair - Below expectations</div>
-              <div>⭐⭐⭐ Good - Met expectations</div>
-              <div>⭐⭐⭐⭐ Very Good - Exceeded expectations</div>
-              <div>⭐⭐⭐⭐⭐ Excellent - Outstanding experience</div>
-            </div>
-          </div>
         </div>
 
         <div className="flex gap-3">

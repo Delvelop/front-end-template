@@ -23,7 +23,6 @@ export default function AddEditTruckScreen({
     name: truck?.name || '',
     flavorCategories: truck?.flavorCategories || ['Classic'],
     description: truck?.description || '',
-    schedule: truck?.schedule || '',
     contact: truck?.contact || '',
     photo: null as File | null
   });
@@ -36,7 +35,6 @@ export default function AddEditTruckScreen({
       name: formData.name,
       flavorCategories: formData.flavorCategories,
       description: formData.description,
-      schedule: formData.schedule,
       contact: formData.contact,
     });
 
@@ -138,21 +136,6 @@ export default function AddEditTruckScreen({
             </p>
           </div>
 
-          {/* Operating Hours */}
-          <div>
-            <Label htmlFor="schedule">
-              Operating Hours <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="schedule"
-              type="text"
-              placeholder="e.g., Mon-Fri: 11am-9pm"
-              value={formData.schedule}
-              onChange={(e) => setFormData({ ...formData, schedule: e.target.value })}
-              required
-              className="mt-1.5"
-            />
-          </div>
 
           {/* Contact Information */}
           <div>
@@ -192,7 +175,7 @@ export default function AddEditTruckScreen({
           <Button
             onClick={handleSubmit}
             className="flex-1 h-12 bg-orange-500 hover:bg-orange-600"
-            disabled={!formData.name || !formData.description || !formData.schedule || !formData.contact}
+            disabled={!formData.name || !formData.description || !formData.contact}
           >
             {truck ? 'Save Changes' : 'Add Truck'}
           </Button>
